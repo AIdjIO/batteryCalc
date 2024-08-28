@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Implementing our hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function batterycalc_theme($existing, $type, $theme, $path) {
+    return [
+        'batterycalc_form' => [
+            'render element' => 'form',
+        ]
+    ];
+}

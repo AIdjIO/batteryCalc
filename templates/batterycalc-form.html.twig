@@ -1,0 +1,52 @@
+{{ form.form_build_id }}
+{{ form.form_id }}
+{{ form.form_token }}
+
+<div class="container ">
+
+    <div class="row align-items-center text-center">
+    {{ form.Batt_Title }}
+    {{ form.Plot }}
+    </div>
+    <div class="row align-items-center">
+    {{ form.Speed_Info_Container }}
+    {{ form.Test_Cycle }}
+    {{ form.Vehicle_Speed }}
+    </div>
+    <div class="row align-items-center text-center">
+      <div class="col">
+        {{ form.Vehicle_Mass }}
+        {{ form.Frontal_Area }} 
+        {{ form.Range }}       
+      </div>
+      <div class="col">
+        {{ form.Road_Slope }}
+        {{ form.Rolling_Resistance }}
+        {{ form.Powertrain_Efficiency }}
+      </div>
+      <div class="col">
+        {{ form.Air_Density }}
+        {{ form.Drag_Coefficient}}
+        {{ form.Ancillary_Energy}}
+      </div>
+      {{ form.CalculatePackSize }}
+    </div>
+    {{ form.Results }}
+      <div class="row align-items-center text-center">
+          <div class="col">{{ form.Pack_Energy_Container }}</div>
+        <div class="col">{{ form.Voltage_Architecture }}</div>
+        </div>
+        <div class="row align-items-center text-center">
+            {{ form.Cell_Geom_Container }}
+        </div>
+      <div class="row align-items-center text-center">
+        <div class="col">{{ form.Cell_Mass }}</div>
+        <div class="col">{{ form.Cell_Capacity }}</div>
+        <div class="col">{{ form.Cell_Voltage }}</div>
+        <div class="col">{{ form.C_rate }}</div>
+        {{ form.CalculatePackParameters }}
+    </div>
+</div>
+{{ form.PackParameters }}
+
+

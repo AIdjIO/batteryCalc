@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the employee module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function batterycalc_install() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function batterycalc_uninstall() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_schema().
+ */
+function batterycalc_schema() {
+  $schema['batterycalc'] = [
+    'description' => 'Table description.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique record ID.',
+      ],
+      'Batt_Title' => [
+        'description' => 'Project Title',
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'Vehicle_Speed' => [
+        'type' => 'text',
+        'length' => 10000,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Vehicle speed profile in km/h.',
+      ],
+      'Vehicle_Mass' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 1500,
+        'description' => 'vehicle mass in kg',
+      ],
+      'Frontal_Area' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 2.5,
+        'description' => 'Vehicle frontal area in m2',
+      ],
+      'Air_Density' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 1.2,
+        'description' => 'Air density in m3',
+      ],
+      'Road_Slope' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Road gradient in degrees',
+      ],
+      'Rolling_Resistance' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 0.01,
+        'description' => 'Rolling resistance coeffient',
+      ],
+      'Drag_coefficient' => [
+        'type' => 'numeric',
+        'length' => 5,
+        'not null' => TRUE,
+        'default' => 0.3,
+        'description' => 'Drag coefficient',
+      ],
+      'Batt_Comment' => [
+        'type' => 'text',
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Provide a comment if necessary (optional)',
+      ],
+    ],
+     'primary key' => ['id'],
+  ];
+
+  return $schema;
+}

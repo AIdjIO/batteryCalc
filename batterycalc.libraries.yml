@@ -20,5 +20,5 @@ chart_library:
     js/hammerjs/hammer.min.js: { minified: true, attributes: {} }
     js/chartjs/chartjs-plugin-zoom.min.js: {minified: true, attributes: {}}
     # js/lineChart.js: {}
-    js/batteryCalc.js: {}
+    js/batterycalc.js: {}
     https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js : { type: external, minified: true }

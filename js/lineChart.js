@@ -14,7 +14,7 @@ let speedChart = new Chart(document.getElementById("line-chart"), {
       ]
     },
     options: {
-      responsive: true,
+      responsive: false,
       plugins: {
         title: {
             display: true,
@@ -32,9 +32,6 @@ let speedChart = new Chart(document.getElementById("line-chart"), {
   }
 });
 
-
-
-
 function getData(){
   let textareaSpeedArray = [];
   let textareaSpeedLabel = [];
@@ -44,9 +41,7 @@ function getData(){
   return [textareaSpeedArray, textareaSpeedLabel];
 }
 
-
-function updateChart(e) {
-  
+function updateChart(e) {  
   [data, labels] = [...getData()];
   speedChart.data.datasets[0].data = data;
   speedChart.data.labels = labels;
@@ -54,8 +49,6 @@ function updateChart(e) {
   speedChart.update();
   speedChart.render();
 }
-
-
 
   textareaSpeed.addEventListener('keyup', updateChart);
   textareaSpeed.addEventListener("focusout", updateChart);

@@ -1,13 +1,13 @@
-batterycalc.batterycalc:
-    path: '/batterycalc'
-    defaults:
-        _title: 'Battery Pack Calculator'
-        _form: 'Drupal\batterycalc\Form\batterycalcForm'
-    requirements:
-        _permission: 'access content'
+# batterycalc.batterycalc:
+#     path: '/batterycalc'
+#     defaults:
+#         _title: 'Battery Pack Calculator'
+#         _form: 'Drupal\batterycalc\Form\batterycalcForm'
+#     requirements:
+#         _permission: 'access content'
 
 batterycalc.ajax:
-    path: '/batterycalc-ajax'
+    path: '/batterycalc'
     defaults:
         # _title: 'Battery Pack Calculator Ajax'
         _form: 'Drupal\batterycalc\Form\batterycalcAjaxForm'

@@ -19,13 +19,23 @@ let speedChart;
                 autosize: true,
                 // width: 1000,
                 // height: 800,
-                automargin: true,
+                automargin: false,
                 margin: {
                   l: 50,
                   r: 50,
-                  b: 100,
-                  t: 100,
-                  pad: 4,
+                  b: 30,
+                  t: 30,
+                  pad: 10,
+                },
+                xaxis: {
+                    tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                    tick0: 0,
+                    dtick: 500
+                },
+                yaxis: {
+                    tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                    tick0: 0,
+                    dtick: 10
                 },
                 legend: {
                     y: 1,

@@ -31,23 +31,19 @@ class batterycalcAjaxForm extends FormBase {
   * {@inheritdoc}
   */
  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attributes'] = ['class' => 'container',];
+    $form['#attributes'] = ['class' => '',];
     $form['Batt_Title'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Project Title'),
         '#required' => TRUE,
         '#default_value' => 'Project 001',
-        '#suffix' => '<div class="error" id = "batt_title"></div>'
+        '#suffix' => '<div class="error" id="batt_title"></div>'
     ];
     $form['information'] = [
         '#type' => 'vertical_tabs',
         '#default_tab' => 'edit-powertrain',
       ];
-    $form['powertrain'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Powertrain'),
-        '#group' => 'information',
-    ];
+
     $form['vehicle'] = [
         '#type' => 'details',
         '#title' => $this->t('Vehicle'),
@@ -55,7 +51,12 @@ class batterycalcAjaxForm extends FormBase {
       ];
     $form['environment'] = [
         '#type' => 'details',
-        '#title' => $this->t('Environment Conditions'),
+        '#title' => $this->t('Environment'),
+        '#group' => 'information',
+    ];
+    $form['powertrain'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Powertrain'),
         '#group' => 'information',
     ];
     // $form['powertrain']['Plot'] = [
@@ -81,7 +82,7 @@ class batterycalcAjaxForm extends FormBase {
     $form['Cycle_Select'] = [
         '#type' => 'select',
         '#title' => $this->t('Select predefined test cycle or select "Custom Cycle" to define your own'),
-        '#description' => $this->t("note: predefined cycles are editable"),
+        '#description' => $this->t("note: predefined cycles are editable in 'Speed Profile' text box below"),
         '#options' => array_combine(array_keys(CycleData::$cycleData),$cycle_options),
         '#default_value' => 'WLTC3b',  
         '#ajax' => [
@@ -91,13 +92,12 @@ class batterycalcAjaxForm extends FormBase {
             'effect' => 'fade',
         ]        
     ];
-
     $form['Speed_Container'] = [
         '#type' => 'container',
         '#attributes' =>  ['id' => 'Speed_Container'],
     ];
 
-    $form['Speed_Container']['vehicle_Speed'] = [ // expect speed in km/h
+    $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h
         '#type' => 'textarea',
         '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#required' => TRUE,
@@ -119,140 +119,12 @@ class batterycalcAjaxForm extends FormBase {
     // The getValue() method returns NULL by default if the form element does
     // not exist. It won't exist yet if we're building it for the first time.
     if ($value !== NULL) {
-        $form['Speed_Container']['vehicle_Speed']['#value'] =
+        $form['Speed_Container']['Vehicle_Speed']['#value'] =
         implode(',',CycleData::$cycleData[$value]['data']);
     }
-    $form['environment']['Environment_Container'] = [
-        '#type' => 'fieldset',
-        '#title' => $this->t('Environment Conditions'),
-    ];
-    $form['environment']['Environment_Container']['Air_Density'] = [
-        '#type' => 'number',
-        '#step'=>0.001,
-        '#title' => $this->t('Air Density [kg/m3]'),
-		'#default_value' => 1.2,
-        '#required' => TRUE,
-        '#suffix' => '<div class="error" id = "air_density"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-    $form['environment']['Environment_Container']['Road_Slope'] = [
-        '#type' => 'number',
-        '#step'=> 0.1,
-        '#title' => $this->t('Road Slope [°]'),
-        '#required' => TRUE,
-		'#default_value' => 0.0,
-        '#suffix' => '<div class="error" id = "road_slope"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-    $form['vehicle']['Vehicle_Container'] = [
-        '#type'=>'fieldset',
-        '#title' => $this->t('Vechicle specification'),
-    ];
-    $form['vehicle']['Vehicle_Container']['vehicle_Mass'] = [
-        '#type' => 'number',
-        '#step'=> 0.1,
-        '#title' => $this->t('vehicle Mass [kg]'),
-		'#default_value' => 2000,
-        '#required' => TRUE,
-        '#suffix' => '<div class="error" id="vehicle_mass"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-    $form['vehicle']['Vehicle_Container']['Frontal_Area'] = [
-        '#type' => 'number',
-        '#step'=>0.01,
-        '#title' => $this->t('Frontal Area [m2]'),
-		'#default_value' => 2.5,
-        '#required' => TRUE,
-        '#suffix' => '<div class="error" id = "frontal_area"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-    $form['vehicle']['Vehicle_Container']['Wheel_Radius'] = [
-        '#type' => 'number',
-        '#step'=>0.001,
-        '#title' => $this->t('Wheel Radius [m]'),
-        '#required' => TRUE,
-		'#default_value' => 0.372,
-        '#suffix' => '<div class="error" id = "rolling_resitance"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-    $form['vehicle']['Vehicle_Container']['Rolling_Resistance'] = [
-        '#type' => 'number',
-        '#step'=>0.001,
-        '#title' => $this->t('Rolling Resistance [-]'),
-        '#required' => TRUE,
-		'#default_value' => 0.012,
-        '#suffix' => '<div class="error" id = "rolling_resitance"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-	$form['vehicle']['Vehicle_Container']['Drag_Coefficient'] = [
-        '#type' => 'number',
-        '#step'=> 0.01,
-        '#title' => $this->t('Aerodynamic Drag [-]'),
-        '#required' => TRUE,
-		'#default_value' => 0.35,
-        '#suffix' => '<div class="error" id = "drag_coefficient"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
-	$form['vehicle']['Vehicle_Container']['Vehicle_Range'] = [
-        '#type' => 'number',
-        '#step'=>1,
-        '#default_value' => 500,
-        '#title' => $this->t('vehicle Range [km]'),
-        '#required' => TRUE,
-        '#suffix' => '<div class="error" id="vehicle_range"></div>',
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper' => 'Results',
-            'disable-refocus' => FALSE,
-            'event' => 'change',
-            'effect' => 'fade',
-        ],
-    ];
     $form['powertrain']['Powertrain_Container'] = [
         '#type' => 'fieldset',
-        '#title' => 'powertrain Specifications',
+        '#title' => 'Powertrain Specifications',
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Type'] = [
         '#type' => 'radios',
@@ -317,7 +189,7 @@ class batterycalcAjaxForm extends FormBase {
     $form['powertrain']['Powertrain_Container']['Powertrain_Efficiency'] = [
         '#type' => 'number',
         '#step' => 0.01,
-        '#title' => $this->t('powertrain Efficiency [-]'),
+        '#title' => $this->t('Powertrain Efficiency [-]'),
         '#required' => TRUE,
         '#default_value'=> 0.9,
         '#suffix' => '<div class="error" id = "powertrain_efficiency"></div>',
@@ -409,15 +281,6 @@ class batterycalcAjaxForm extends FormBase {
             ];
             break;
     }
-
-    $form['powertrain']['Powertrain_Container']['Drive_Ratio'] = [
-        '#type' => 'number',
-        '#step' => 0.01,
-        '#default_value' => 0.43,
-        '#title' => $this->t('Drive ratio'),
-        '#required'=> TRUE,
-        '#suffix' => '<div class="error" id="drive_ratio"></div>',
-    ];
     $form['powertrain']['Powertrain_Container']['Regen_Capacity'] = [
         '#type' => 'number',
         '#step' => 1,
@@ -433,6 +296,134 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Useable Capacity %'),
         '#required'=> TRUE,
         '#suffix' => '<div class="error" id="useable_capacity"></div>',
+    ];
+    $form['environment']['Environment_Container'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Environment Conditions'),
+    ];
+    $form['environment']['Environment_Container']['Air_Density'] = [
+        '#type' => 'number',
+        '#step'=>0.001,
+        '#title' => $this->t('Air Density [kg/m3]'),
+		'#default_value' => 1.2,
+        '#required' => TRUE,
+        '#suffix' => '<div class="error" id = "air_density"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+    $form['environment']['Environment_Container']['Road_Slope'] = [
+        '#type' => 'number',
+        '#step'=> 0.1,
+        '#title' => $this->t('Road Slope [°]'),
+        '#required' => TRUE,
+		'#default_value' => 0.0,
+        '#suffix' => '<div class="error" id = "road_slope"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+    $form['vehicle']['Vehicle_Container'] = [
+        '#type'=>'fieldset',
+        '#title' => $this->t('Vehicle Specification'),
+    ];
+    $form['vehicle']['Vehicle_Container']['Vehicle_Mass'] = [
+        '#type' => 'number',
+        '#step'=> 0.1,
+        '#title' => $this->t('Vehicle Mass [kg]'),
+		'#default_value' => 2000,
+        '#required' => TRUE,
+        '#suffix' => '<div class="error" id="vehicle_mass"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+    $form['vehicle']['Vehicle_Container']['Frontal_Area'] = [
+        '#type' => 'number',
+        '#step'=>0.01,
+        '#title' => $this->t('Frontal Area [m2]'),
+		'#default_value' => 2.5,
+        '#required' => TRUE,
+        '#suffix' => '<div class="error" id = "frontal_area"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+    $form['vehicle']['Vehicle_Container']['Wheel_Radius'] = [
+        '#type' => 'number',
+        '#step'=>0.001,
+        '#title' => $this->t('Wheel Radius [m]'),
+        '#required' => TRUE,
+		'#default_value' => 0.372,
+        '#suffix' => '<div class="error" id = "rolling_resitance"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+    $form['vehicle']['Vehicle_Container']['Rolling_Resistance'] = [
+        '#type' => 'number',
+        '#step'=>0.001,
+        '#title' => $this->t('Rolling Resistance [-]'),
+        '#required' => TRUE,
+		'#default_value' => 0.012,
+        '#suffix' => '<div class="error" id = "rolling_resitance"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+	$form['vehicle']['Vehicle_Container']['Drag_Coefficient'] = [
+        '#type' => 'number',
+        '#step'=> 0.01,
+        '#title' => $this->t('Aerodynamic Drag [-]'),
+        '#required' => TRUE,
+		'#default_value' => 0.35,
+        '#suffix' => '<div class="error" id = "drag_coefficient"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
+    ];
+	$form['vehicle']['Vehicle_Container']['Vehicle_Range'] = [
+        '#type' => 'number',
+        '#step'=>1,
+        '#default_value' => 500,
+        '#title' => $this->t('Vehicle Range [km]'),
+        '#required' => TRUE,
+        '#suffix' => '<div class="error" id="vehicle_range"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
     ];
     $form['actions'] = [
 		'#type' => 'actions',
@@ -457,7 +448,7 @@ class batterycalcAjaxForm extends FormBase {
 
     $form['CalculatePackSize'] = [
         '#type' =>'button',
-        '#value' => $this->t('Calculate powertrain Requirements'),
+        '#value' => $this->t('Calculate Powertrain Requirements'),
         '#ajax' => [
             'callback' => '::energy_per_km',
             'wrapper'=> 'Results',
@@ -667,11 +658,11 @@ public function selectCycle($form, FormStateInterface $form_state) {
 }
 
 public function motorConfiguration($form, FormStateInterface $form_state) {
-    return $form['powertrain_Container']['Motor'];
+    return $form['powertrain']['Powertrain_Container']['Motor'];
 }
 public function cellGeometryParameters($form, FormStateInterface $form_state) {
     // other way to return a form element
-    return $form['Cell_Geom_Container']['Geometry'];
+    return $form['pack']['Cell_Geom_Container']['Geometry'];
 }
 
 public function batteryPackParameters($form, FormStateInterface $form_state) {
@@ -785,7 +776,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
 
 public function speed_array(array $form, FormStateInterface $form_state){
     $formField = $form_state->getValues();
-    $speed = array_map('floatval',explode(",",$formField['vehicle_Speed']));
+    $speed = array_map('floatval',explode(",",$formField['Vehicle_Speed']));
     return $speed;
 }
 
@@ -806,7 +797,7 @@ public function energy_per_km($form, FormStateInterface $form_state){
 
     $speed = $this->speed_array($form, $form_state);
     $distance = array_sum($speed)/3600; 
-    $range = $formField['vehicle_Range'];
+    $range = $formField['Vehicle_Range'];
     $useable_capacity = $formField['Useable_Capacity'] / 100;
     $regen_capacity = $formField['Regen_Capacity'] / 100;
 
@@ -814,7 +805,7 @@ public function energy_per_km($form, FormStateInterface $form_state){
     $roadLoadE = $this->road_load_energy($form, $form_state);
     $aeroE = $this->aero_drag_energy($form, $form_state);
 
-    $efficiency = $formField['powertrain_Efficiency'];
+    $efficiency = $formField['Powertrain_Efficiency'];
     $ancillary_energy_per_km = $formField['Ancillary_Energy'];
 
     // vehicle Motor Power [kW]
@@ -857,11 +848,11 @@ public function energy_per_km($form, FormStateInterface $form_state){
         return $ajax_response->addCommand(new HtmlCommand('#batt_title', 'Please enter the project title.'));
         $flag = FALSE;
     }
-    if(trim($formField['vehicle_Speed']) == ''){
+    if(trim($formField['Vehicle_Speed']) == ''){
         return $ajax_response->addCommand(new HtmlCommand('#vehicle_speed_error', 'Please enter the vehicle speed profile.'));
         $flag = FALSE;
     }
-    if(trim($formField['vehicle_Mass']) == ''){
+    if(trim($formField['Vehicle_Mass']) == ''){
         return $ajax_response->addCommand(new HtmlCommand('#vehicle_mass', 'Please enter the vehicle mass'));
         $flag = FALSE;
     }
@@ -885,7 +876,7 @@ public function energy_per_km($form, FormStateInterface $form_state){
         return $ajax_response->addCommand(new HtmlCommand('#drag_coefficient', 'Please enter the drag coefficient'));
         $flag = FALSE;
     }
-    if(trim($formField['powertrain_Efficiency']) == ''){
+    if(trim($formField['Powertrain_Efficiency']) == ''){
         return $ajax_response->addCommand(new HtmlCommand('#powertrain_efficiency', 'Please enter the rolling resistance'));
         $flag = FALSE;
     }
@@ -896,8 +887,8 @@ public function energy_per_km($form, FormStateInterface $form_state){
 
     if ($flag){
         $formData['Batt_Title'] = $formField['Batt_Title'];
-        $formData['vehicle_Speed'] = $formField['vehicle_Speed'];
-        $formData['vehicle_Mass'] = $formField['vehicle_Mass'];
+        $formData['Vehicle_Speed'] = $formField['Vehicle_Speed'];
+        $formData['Vehicle_Mass'] = $formField['Vehicle_Mass'];
         $formData['Frontal_Area'] = $formField['Frontal_Area'];
         $formData['Air_Density'] = $formField['Air_Density'];
         $formData['Road_Slope'] = $formField['Road_Slope'];
@@ -921,8 +912,8 @@ public function validateForm(array &$form, FormStateInterface $form_state) {
 	// 	$formField = $form_state ->getValues();
         
 
-        // $vehicleSpeed = trim($formField['vehicle_Speed']);
-        // $vehicleMass = trim($formField['vehicle_Mass']);
+        // $vehicleSpeed = trim($formField['Vehicle_Speed']);
+        // $vehicleMass = trim($formField['Vehicle_Mass']);
         // $frontalArea = trim($formField['Frontal_Area']);
         // $airDensity = trim($formField['Air_Density']);
         // $roadSlope = trim($formField['Road_Slope']);
@@ -934,10 +925,10 @@ public function validateForm(array &$form, FormStateInterface $form_state) {
         // $cRate = trim($formField['C_rate']);
 
         // if(!preg_match("/^(\d*\.?\d+? ?,*)+/",$vehicleSpeed)){
-        //     $form_state->setErrorByName('vehicle_Speed',$this->t('Enter comma separated values for the vehicle speed'));
+        //     $form_state->setErrorByName('Vehicle_Speed',$this->t('Enter comma separated values for the vehicle speed'));
         // }
         // if(!preg_match("/^(\d+\.?\d*)/",$vehicleMass)){
-        //     $form_state->setErrorByName('vehicle_Mass',$this->t('Enter a decimal value'));
+        //     $form_state->setErrorByName('Vehicle_Mass',$this->t('Enter a decimal value'));
         // }
         // if(!preg_match("/^(\d+\.?\d*)/",$frontalArea)){
         //     $form_state->setErrorByName('Frontal_Area',$this->t('Enter a decimal value'));
@@ -981,7 +972,7 @@ public function submitForm(array &$form, FormStateInterface $form_state){
 public function inertial_energy(array &$form, FormStateInterface $form_state){
     $formField = $form_state->getValues();
     $speed = $this->speed_array($form, $form_state);
-    $mass = $formField['vehicle_Mass'];
+    $mass = $formField['Vehicle_Mass'];
     $dt = 1;
     $energy = [];
 
@@ -999,7 +990,7 @@ public function inertial_energy(array &$form, FormStateInterface $form_state){
 public function road_load_energy(array &$form, FormStateInterface $form_state){
     $formField = $form_state->getValues();
     $speed = $this->speed_array($form, $form_state);
-    $mass = $formField['vehicle_Mass'];
+    $mass = $formField['Vehicle_Mass'];
     $alpha = $formField['Road_Slope']*M_PI/180;
     $rr = $formField['Rolling_Resistance'];
     $dt = 1; //time step, 1sec

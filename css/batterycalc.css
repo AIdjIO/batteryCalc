@@ -1,11 +1,35 @@
-.success {
-    color: lightgreen;
-    font-size: 25px;
-    font-weight: bold;
+/* #batterycalc-ajax {
+    background: #eadac1;
+} */
+#block-olivero-content {
+    grid-column: 1/14;
 }
-
-.error {
-    color: lightcoral;
-    font-size: 25px;
-    font-weight: bold;
+#content {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    margin: 26px auto 0;
+    padding: 24px;
+    position: relative;
+    width: 100%;
+}
+#content:before, #content:after {
+    content: "";
+    height: 98%;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+}
+#content:before {
+    background: #fafafa;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    left: -5px;
+    top: 4px;
+    transform: rotate(-2.5deg);
+}
+#content:after {
+    background: #f6f6f6;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    right: -3px;
+    top: 1px;
+    transform: rotate(1.4deg);
 }

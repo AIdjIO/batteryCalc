@@ -58,7 +58,7 @@
             
             traces.push(trace1)
 
-            Plotly.newPlot( document.getElementById('myDiv'), traces, layout );
+            Plotly.newPlot( document.getElementById('myDiv'), traces, layout, {responsive:true} );
                 
             calculateSpeedInfo(y);
 
@@ -139,5 +139,5 @@ function updatePlotly(traces, layout){
     traces[0].x = labels;
     traces[0].y = data;
 
-    Plotly.react('myDiv', traces, layout);
+    Plotly.react('myDiv', traces, layout, {responsive:true});
 }

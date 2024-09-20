@@ -1,12 +1,6 @@
-let speedChart;
-
 (function($, Drupal, drupalSettings){
     'use strict';
-    // $(document).ready(function(){
-    //     $('input').on('focus', function(){
-    //         $(this).parent().next('.error').text('');
-    //     });
-    // });
+
     Drupal.behaviors.plotlyjs = {
         attach: function attach(context, settings) {
             let traces = [];
@@ -70,15 +64,20 @@ let speedChart;
 
             let textareaSpeed = document.getElementsByTagName("textarea")[0];
 
-            // textareaSpeed.addEventListener('keyup', updatePlotly.bind(this, traces, layout));
-            // textareaSpeed.addEventListener("focusout", updatePlotly.bind(this, traces, layout));
-            textareaSpeed.addEventListener("change", updatePlotly.bind(this, traces, layout));
+            textareaSpeed.addEventListener('keyup', updatePlotly.bind(this, traces, layout));
+            // textareaSpeed.addEventListener("change", updatePlotly.bind(this, traces, layout));
         }
       };
       
 })(jQuery, Drupal)
 
-
+/**
+ * This function reads values from textarea and processes
+ * the data to generate speed array and data labels
+ * ready to use for plotting purpose.
+ * 
+ * @returns {array} of 2 arrays of speed data and labels.
+ */
 function getData(){
     let textareaSpeed = document.getElementsByTagName("textarea")[0];
 
@@ -91,14 +90,20 @@ function getData(){
     return [ textareaSpeedLabel, textareaSpeedArray ];
 }
 
+/**
+ * generates output text of vehicle speed cycle calculated statistics
+ * this function calculates the min, max, average speed of the cycle
+ * and the total distance in km.
+ * speed cycle is specified in km/h with a sample time of one second
+ * 
+ * @param {Array} speedData - array of 2 arrays containing labels and
+ * and speed data respectively.
+ */
 function calculateSpeedInfo(speedData){
-    // this function calculates the min, max, average speed of the cycle
-    // and the total distance in km.
-    // speed cycle is specified in km/h with a sample time of one second
+
     
     let speedInfo = document.getElementById('speed_info');
 
-    console.log(speedInfo.innerText);
     // speed array for acceleration calculation.
     let speedArrayShifted = [...speedData];
     let element = speedArrayShifted.shift();
@@ -113,26 +118,18 @@ function calculateSpeedInfo(speedData){
                             / accelerationValues.filter(v => v < 0).length)
                             . toFixed(3);
 
-    let totalDistance = ((speedData.reduce((a, b) => a + b, 0) || 0)/3600).toFixed(2);
+    let totalDistance = ((speedData.reduce((a, b) => a + b, 0) || 0) ).toFixed(2);
     let averageSpeed = (totalDistance / speedData.length  || 0).toFixed(2) ;
 
     speedInfo.innerHTML = `<i>This drive cycle has a minimum speed of ${Math.min(...speedData)||0} km/h, a maximum speed of ${Math.max(...speedData)||0} km/h,
                                  an average speed of ${averageSpeed} km/h, an average acceleration of ${averageAcceleration} m/s², an average deceleration of ${averageDeceleration} m/s²and a total distance of ${(totalDistance/3600).toFixed(2)} km</i>`
-    console.log(speedInfo.innerText);
-}
-function updateChart(e) { 
-    
-    let labels, data1 = [...getData()];
-
-    calculateSpeedInfo(data1);
-
-    speedChart.data.datasets[0].data = data1;
-    speedChart.data.labels = labels;
-
-    speedChart.update();
-    // speedChart.render();
 }
 
+/**
+ * Callback function to update plot of vehicle speed (using Plotly library)
+ * @param {Array} traces - an array of arrays of plot data 
+ * @param {Object} layout - an object of plot settings
+ */
 function updatePlotly(traces, layout){
 
     let [labels, data] = [...getData()];

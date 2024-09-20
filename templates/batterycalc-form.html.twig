@@ -4,17 +4,22 @@
 
 <div class="container p-0 m-0">
 
-    <div class="row align-items-center text-center">
+  <div class="row align-items-center text-center">
     {{ form.Batt_Title }}
     <!-- {{ form.Plot }} -->
   </div>
   <div class="row align-items-center">
     {{ form.Cycle_Select }}
+    <a href="https://assets.publishing.service.gov.uk/media/5a7984f440f0b642860d8c2d/ppr-354.pdf" target="_blank">
+      A reference book of driving cycles for use in the measurement of road vehicle emissions
+      </a>
     {{ form.Plotly }}
     {{ form.Speed_Info_Container }}
     {{ form.Speed_Container }}
-    {{ form.information }}
-      <!-- <div class="card mb-1">
+    {{ form.powertrain }}
+    {{ form.vehicle }}
+    {{ form.environment }}
+    <!-- <div class="card mb-1">
         <div class="card-header">
           Vehicle Specifications
         </div>
@@ -79,11 +84,13 @@
         </div>
       </div> -->
   </div>
+  <div class="row align-items-center">
     {{ form.CalculatePackSize }}
-    {{ form.Results }}
-      <div class="row align-items-center">
-        {{ form.pack }}
-          <!-- <div class="col">{{ form.Pack_Energy_Container }}</div>
+  </div>
+  {{ form.Results }}
+  <div class="row align-items-center">
+    {{ form.pack }}
+    <!-- <div class="col">{{ form.Pack_Energy_Container }}</div>
         <div class="col">{{ form.Voltage_Architecture }}</div>
         </div>
         <div class="row align-items-center">
@@ -99,9 +106,9 @@
           <div class="col">{{ form.Cell_Voltage_Nom }}</div>
           <div class="col">{{ form.Cell_Voltage_Max }}</div>
         </div> -->
-      </div>
-    {{ form.CalculatePackParameters }}
-    {{ form.PackParameters }}
   </div>
-
-
+  <div class="row align-items-center">
+  {{ form.CalculatePackParameters }}
+  </div>
+  {{ form.PackParameters }}
+</div>

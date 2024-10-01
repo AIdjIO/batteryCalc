@@ -16,10 +16,11 @@ chart_library:
       css/bootstrap/bootstrap.min.css: { minified: true, attributes: {} }
       css/bootstrap/bootstrap-icons.min.css: { minified: true, attributes: {} }
   js:
+    js/main.js: {attributes: {'type': 'module'}}
     js/chartjs/chart.min.js: { minified: true, attributes: {} }
     js/hammerjs/hammer.min.js: { minified: true, attributes: {} }
-    js/chartjs/chartjs-plugin-zoom.min.js: {minified: true, attributes: {}}
-    js/batterycalc.js: {}
-    js/plotly/plotly_mod.min.js: {}
+    js/chartjs/chartjs-plugin-zoom.min.js: {minified: true, attributes: {'charset': "utf-8"}}
+    js/batterycalc.js: {attributes: {'type': 'module'}}
+    js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
 

@@ -13,76 +13,33 @@
     <a href="https://assets.publishing.service.gov.uk/media/5a7984f440f0b642860d8c2d/ppr-354.pdf" target="_blank">
       A reference book of driving cycles for use in the measurement of road vehicle emissions
       </a>
+    {{ form.Speed_Container }}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"><i class="bi bi-bar-chart"></i>Plot Functions</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a id="cycle_power_dmnd" class="nav-link">Cycle Power Demand</a></li>
+                <li class="nav-item"><a id="motor_power_cont" class="nav-link">Motor Power Continuous</a></li>
+                <li class="nav-item"><a id="motor_power_peak" class="nav-link">Motor Power Peak</a></li>
+                <li class="nav-item"><a id="cycle_current_continuous" class="nav-link">Cycle Current Continuous</a></li>
+                <li class="nav-item"><a id="cycle_current_peak" class="nav-link">Cycle Current Peak</a></li>
+                <li class="nav-item"><a id="cycle_energy_regen_off" class="nav-link">Cycle Energy (Regen Off)</a></li>
+                <li class="nav-item"><a id="cycle_energy_regen_on" class="nav-link">Cycle Energy (Regen On)</a></li>
+                <li class="nav-item"><a id="cycle_soc" class="nav-link">Cycle SOC</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     {{ form.Plotly }}
     {{ form.Speed_Info_Container }}
-    {{ form.Speed_Container }}
+
     {{ form.powertrain }}
     {{ form.vehicle }}
     {{ form.environment }}
-    <!-- <div class="card mb-1">
-        <div class="card-header">
-          Vehicle Specifications
-        </div>
-        <div class="card-body p-2">
-            <div class="row align-items-center ">
-            <div class="col">
-              {{ form.Vehicle_Container.Vehicle_Mass }}
-              {{ form.Vehicle_Container.Vehicle_Range }}
-              {{ form.Vehicle_Container.Wheel_Radius }}
-            </div>
-            <div class="col">
-              {{ form.Vehicle_Container.Frontal_Area }}
-              {{ form.Vehicle_Container.Rolling_Resistance }}
-              {{ form.Vehicle_Container.Drag_Coefficient }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card mb-1">
-        <div class="card-header">
-          Powertrain Specifications
-        </div>
-          <div class="card-body p-2">
-            <div class="row align-items-center">
-              <div class="col">
-                {{ form.Powertrain_Container.Drive_Type}}
-              </div>
-              <div class="col">
-                {{ form.Powertrain_Container.Motor }} 
-              </div> 
-            </div>
-          </div>
-          <div class="card-body p-2">
-            <div class="row align-items-center p-auto">
-              <div class="col">
-                {{ form.Powertrain_Container.Powertrain_Efficiency }}
-                {{ form.Powertrain_Container.Drag_Coefficient }}
-                {{ form.Powertrain_Container.Regen_Capacity }}   
-                {{ form.Powertrain_Container.Useable_Capacity }} 
-              </div>
-              <div class="col">
-                {{ form.Powertrain_Container.Ancillary_Energy }} 
-                {{ form.Powertrain_Container.Drive_Ratio_Differential }}
-                {{ form.Powertrain_Container.Drive_Ratio_Gear }}
-              </div>
-            </div>
-          </div>
-      </div>
-      <div class="card mb-1">
-        <div class="card-header">
-          Environment Conditions
-        </div>
-        <div class="card-body">
-          <div class="row align-items-center">
-              <div class="col">
-                {{ form.Environment_Container.Air_Density }}
-              </div>
-              <div class="col">
-                {{ form.Environment_Container.Road_Slope }}
-              </div>
-          </div>
-        </div>
-      </div> -->
   </div>
   <div class="row align-items-center">
     {{ form.CalculatePackSize }}
@@ -111,4 +68,6 @@
   {{ form.CalculatePackParameters }}
   </div>
   {{ form.PackParameters }}
+  {{ form.plots }}
+  {{ form.plot_data }}
 </div>

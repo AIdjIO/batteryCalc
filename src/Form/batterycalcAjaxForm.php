@@ -56,18 +56,16 @@ class batterycalcAjaxForm extends FormBase {
     $form['environment'] = [
         '#type' => 'details',
         '#title' => $this->t('Environment'),
-
     ];
     $form['Plotly'] =  [
         '#type' => 'markup',
-        '#markup' => '<div id = "myDiv"></div>',
+        '#markup' => '<div id = "speedPlot"></div>',
          '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
       ];
     $form['Speed_Info_Container'] = [
         '#type' => 'container',
         '#markup' => '<div id="speed_info" class="alert alert-primary"></div>',
     ];
-    
     $cycle_options = array_map(function($key) {
         return $key . ' -  ' . CycleData::$cycleData[$key]['title'];
      }, array_keys(CycleData::$cycleData));
@@ -86,12 +84,13 @@ class batterycalcAjaxForm extends FormBase {
         ]        
     ];
     $form['Speed_Container'] = [
-        '#type' => 'container',
+        '#type' => 'details',
+        '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#attributes' =>  ['id' => 'Speed_Container'],
     ];
     $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h
         '#type' => 'textarea',
-        '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
+        // '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#required' => TRUE,
         '#default_value' =>  implode(',',CycleData::$cycleData['WLTC3b']['data']),
         '#suffix' => '<div class="error" id="vehicle_speed_error"></div>',
@@ -175,10 +174,17 @@ class batterycalcAjaxForm extends FormBase {
     $form['powertrain']['Powertrain_Container']['Regen_Capacity'] = [
         '#type' => 'number',
         '#step' => 1,
-        '#default_value' => 60,
+        '#default_value' => 100,
         '#title' => $this->t('Regenerative Braking %'),
         '#required'=> TRUE,
         '#suffix' => '<div class="error" id="regen_braking"></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
     ];
     $form['powertrain']['Powertrain_Container']['Useable_Capacity'] = [
         '#type' => 'number',
@@ -187,11 +193,17 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Useable Capacity %'),
         '#required'=> TRUE,
         '#suffix' => '<div class="error" id="useable_capacity"></div></div>',
+        '#ajax' => [
+            'callback' => '::energy_per_km',
+            'wrapper' => 'Results',
+            'disable-refocus' => FALSE,
+            'event' => 'change',
+            'effect' => 'fade',
+        ],
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Type'] = [
         '#type' => 'radios',
         '#title' => $this->t('Drive type'),
-        '#attributes' => ['disabled' => 'disabled'],
         '#options' => [0 => $this->t('Front wheel drive'),
                        1 => $this->t('Rear wheel drive'),
                        2 => $this->t('All wheel drive')
@@ -209,15 +221,14 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => 'motor power specification(s)',
         '#attributes' => ['id' => 'motor-container',],
     ];
-    
+
     switch ($form_state->getValue('Drive_Type')){
         case 0:
         default:
             $form['powertrain']['Powertrain_Container']['Motor']['Front_Motor_Power_Peak'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 400,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 200,
                 '#title' => $this->t('Front Motor Peak Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="front_motor_power_peak"></div>',
@@ -225,8 +236,7 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Front_Motor_Power_Continuous'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 200,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 100,
                 '#title' => $this->t('Front Motor Continuous Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="front_motor_power_continuous"></div>',
@@ -236,8 +246,7 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Rear_Motor_Power_Peak'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 400,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 200,
                 '#title' => $this->t('Rear Motor Peak Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="rear_motor_power_peak"></div>',
@@ -245,8 +254,7 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Rear_Motor_Continuous_Peak'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 200,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 100,
                 '#title' => $this->t('Rear Motor Continuous Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="rear_motor_power_continuous"></div>',
@@ -256,8 +264,7 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Front_Motor_Power_Peak'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 400,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 200,
                 '#title' => $this->t('Front Motor Peak Power [kW]'),
                 '#required' => TRUE,
                 '#prefix' => '<div class="row align-items-center p-auto"><div class="col">',
@@ -266,8 +273,7 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Rear_Motor_Power_Peak'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 400,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 200,
                 '#title' => $this->t('Rear Motor Peak Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="rear_motor_power_peak"></div></div>',
@@ -275,18 +281,16 @@ class batterycalcAjaxForm extends FormBase {
             $form['powertrain']['Powertrain_Container']['Motor']['Front_Motor_Power_Continuous'] = [
                 '#type' => 'number',
                 '#step'=>1,
-                '#default_value' => 200,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 100,
                 '#title' => $this->t('Front Motor Continuous Power [kW]'),
                 '#required' => TRUE,
                 '#prefix' => '<div class="col">',
                 '#suffix' => '<div class="error" id="front_motor_power_continuous"></div>',
             ];
-            $form['powertrain']['Powertrain_Container']['Motor']['Rear_Motor_Continuous_Peak'] = [
+            $form['powertrain']['Powertrain_Container']['Motor']['Rear_Motor_Power_Continuous'] = [
                 '#type' => 'number',
                 '#step'=> 1,
-                '#default_value' => 200,
-                '#attributes' => ['disabled' => 'disabled'],
+                '#default_value' => 100,
                 '#title' => $this->t('Rear Motor Continuous Power [kW]'),
                 '#required' => TRUE,
                 '#suffix' => '<div class="error" id="rear_motor_power_continuous"></div></div></div>',
@@ -623,7 +627,36 @@ class batterycalcAjaxForm extends FormBase {
     $form['PackParameters'] = [
         '#type' => 'container',
         '#markup' => '<div id="packParameters" class="alert alert-primary">Battery Pack Specifications here...</div>'
-        ];   
+        ];
+    $form['plot_data']= [
+        '#type' => 'container',
+        '#attributes' => ['id' => 'plot-data'],
+    ];
+    $form['plot_data']['Regen_Energy'] =  [ 
+        '#type' => 'textarea',
+        '#default_value' =>  '',
+        '#attributes' => ['class' => ['plot_data',]]
+    ];
+    $form['plot_data']['NoRegen_Energy'] = [ 
+        '#type' => 'textarea',
+        '#default_value' =>  '',
+        '#attributes' => ['class' => ['plot_data',]]
+    ];
+    $form['plot_data']['Power_Cycle'] = [ 
+        '#type' => 'textarea',
+        '#default_value' => '',
+        '#attributes' => ['class' => ['plot_data',]]
+    ];
+    $form['plot_data']['Continuous_Power'] = [
+        '#type' => 'textarea',
+        '#default_value' =>  '',
+        '#attributes' => ['class' => ['plot_data',]]
+    ];
+    $form['plot_data']['Peak_Power'] = [ 
+        '#type' => 'textarea',
+        '#default_value' =>  '',
+        '#attributes' => ['class' => ['plot_data',]]
+    ];
 
     $form['CalculatePackParameters'] = [
         '#type' =>'button',
@@ -655,6 +688,7 @@ public function selectCycle($form, FormStateInterface $form_state) {
 public function motorConfiguration($form, FormStateInterface $form_state) {
     return $form['powertrain']['Powertrain_Container']['Motor'];
 }
+
 public function cellGeometryParameters($form, FormStateInterface $form_state) {
     // other way to return a form element
     return $form['pack']['Cell_Geom_Container']['Geometry'];
@@ -762,32 +796,162 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
             '@current' => $current,
             '@power' => $power,
         ]);
+
+       $cycle_power = $this->cycle_power($form,$form_state);
+
     } else {
         $text = "Battery Pack Specifications here... Select a cell first! in Battery Pack Sizing Calculations";
     }
 
-    return $ajax_response->addCommand(new HtmlCommand('#packParameters', $text));
+    $ajax_response->addCommand(new HtmlCommand('#packParameters', $text));
+
+    return $ajax_response;
 }
 
-public function speed_array(array $form, FormStateInterface $form_state){
-    $formField = $form_state->getValues();
-    $speed = array_map('floatval',explode(",",$formField['Vehicle_Speed']));
-    return $speed;
+public function plotData($form, FormStateInterface $form_state) {
+    // $form['plot_data']['Power_Cycle']['#value'] = $cycle_power;
+    // $ajax_response = new AjaxResponse();
+    // return $ajax_response->addCommand(new ReplaceCommand('#plot-data', $form['plot_data']));
+    $form['plot_data']['Power_Cycle']['#value'] = $this->cycle_power($form, $form_state);
+    return $form['plot_data'];
 }
 
 /**
- * 
- */
- public function calculateSpeedStatistics(array $form, FormStateInterface $form_state){  
-    
-    $ajax_response = new AjaxResponse();  
-    $text='';
-    
-    return $ajax_response->addCommand(new HtmlCommand('#speed_info', $text));
- }
+* @param array $form
+* this form
+* @param FromStateInterface $form_state
+* the variable that holds the state of this form
+* 
+* @return array
+* an array of speed values second by second.
+*/
+public function speed_array(array $form, FormStateInterface $form_state){
+    return array_map('floatval',explode(",",(string)$form_state->getValue('Vehicle_Speed')));
+}
 
- /**
+/**
+ * Inertial Power
+ * 
+ * @param array $form
+ * this form
+ * @param FromStateInterface $form_state
+ * the variable that holds the state of this form
+ * 
+ * @return array
+ * an array of power values second by second.
+ */
+public function inertial_power($form, FormStateInterface $form_state){
+
+    $speed = $this->speed_array($form, $form_state);
+    $mass = $form_state->getValue('Vehicle_Mass');
+    $dt = 1;
+    $power = [];
+
+    for ($i = 0; $i < count($speed)-1; $i++) {
+        array_push($power, $mass * ($speed[$i+1] - $speed[$i]) / $dt / 3.6 
+                                  * $speed[$i+1] / 3.6 );
+    }
+
+    return $power;   //[W]
+}
+
+/**
+ * road load power
+ * m * g * Cr *cos(alpha) + m * g * sin(alpha) * v
+ * 
+ * @param array $form
+ * this form
+ * @param FromStateInterface $form_state
+ * the variable that holds the state of this form
+ * 
+ * @return array
+ * an array of power values second by second.
+*/
+public function road_load_power(array &$form, FormStateInterface $form_state){
+
+    $speed = $this->speed_array($form, $form_state);
+    $mass = $form_state->getValue('Vehicle_Mass');
+    $alpha = $form_state->getValue('Road_Slope')*M_PI/180;
+    $rr = $form_state->getValue('Rolling_Resistance');
+    $dt = 1; //time step, 1sec
+    $power = [];
+
+    for ($i = 0; $i < count($speed); $i++){
+        array_push($power, $mass * gravity 
+                 * ($rr * cos($alpha) + sin($alpha) )
+                 * $speed[$i] / 3.6 );
+    }
+
+    return $power;  //[w]
+}
+
+/**
+ * aerodynamic drag power
+ * 0.5 * rho * Cd * A * v^3
+ * 
+ * @param array $form
+ * this form
+ * @param FromStateInterface $form_state
+ * the variable that holds the state of this form
+ * 
+ * @return array
+ * an array of power values second by second.
+ */
+public function aero_drag_power(array &$form, FormStateInterface $form_state){
+    $speed = $this->speed_array($form, $form_state);
+    $Cd = $form_state->getValue('Drag_Coefficient');
+    $rho = $form_state->getValue('Air_Density');
+    $frontalArea = $form_state->getValue('Frontal_Area');
+    $dt = 1;
+    $power = [];
+
+    for ($i = 0; $i < count($speed); $i++){
+        array_push($power, 0.5 * $rho *  $Cd * $frontalArea 
+                                             * pow($speed[$i]/ 3.6, 2)
+                                             * $speed[$i] / 3.6 );
+    }
+
+    return $power;  //[w]
+}
+
+/**
+ * cycle power
+ * 
+ * @param array $form
+ * this form
+ * @param FromStateInterface $form_state
+ * the variable that holds the state of this form
+ * 
+ * @return array
+ * an array of cycle power demand values second by second.
+ */
+public function cycle_power($form, FormStateInterface $form_state){
+
+    $inertial_power = $this->inertial_power($form, $form_state);
+    $road_load_power = $this->road_load_power($form, $form_state);
+    $aero_load_power = $this->aero_drag_power($form, $form_state);
+
+    $cycle_power = array_map(function($a, $b, $c){
+            return $a + $b +$c;
+    }, $inertial_power, $road_load_power, $aero_load_power);
+
+    // for($i = 0;  $i < $size; $i++){
+    //     $cycle_power[$i] = $inertial_power[$i] + $road_load_power[$i] + $aero_load_power[$i];
+    // }
+    
+    return $cycle_power;
+}
+
+/**
  * Energy consumption[kwh/km]
+ * 
+ * @param array $form
+ * this form
+ * @param FromStateInterface $form_state
+ * the variable that holds the state of this form
+ * 
+ * @return array
+ * an array of power values second by second.
  */
 public function energy_per_km($form, FormStateInterface $form_state){
     $ajax_response = new AjaxResponse();
@@ -837,7 +1001,7 @@ public function energy_per_km($form, FormStateInterface $form_state){
  * Returns a list of cells in the database file.
  * 
  *  @param string $db_name
- *  The cell database file name located in ../assests folder
+ *  The cell database file name located in ../assets folder
  *
  * @return array
  *   An associative array cells data from a database file.

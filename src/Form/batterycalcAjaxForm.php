@@ -14,7 +14,7 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Database\Database;
 use Drupal\batterycalc\Form\CycleData;
 
-define("gravity", 9.81);
+define("GRAVITY", 9.81);
 define("CELL_DB_NAME", 'cell_db2.json');
 
 /**
@@ -57,7 +57,7 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'details',
         '#title' => $this->t('Environment'),
     ];
-    $form['Plotly'] =  [
+    $form['PlotlySpeed'] =  [
         '#type' => 'markup',
         '#markup' => '<div id = "speedPlot"></div>',
          '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
@@ -70,7 +70,7 @@ class batterycalcAjaxForm extends FormBase {
         return $key . ' -  ' . CycleData::$cycleData[$key]['title'];
      }, array_keys(CycleData::$cycleData));
     
-     $form['Cycle_Select'] = [
+    $form['Cycle_Select'] = [
         '#type' => 'select',
         '#title' => $this->t('Select predefined test cycle or select "Custom Cycle" to define your own'),
         '#description' => $this->t("note: predefined cycles are editable in 'Speed Profile' text box below"),
@@ -90,11 +90,15 @@ class batterycalcAjaxForm extends FormBase {
     ];
     $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h
         '#type' => 'textarea',
-        // '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#required' => TRUE,
         '#default_value' =>  implode(',',CycleData::$cycleData['WLTC3b']['data']),
         '#suffix' => '<div class="error" id="vehicle_speed_error"></div>',
     ];
+    $form['PlotlySpeedPreview'] =  [
+        '#type' => 'markup',
+        '#markup' => '<div id = "speedPlotPreview"></div>',
+         '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
+      ];
 
     // An AJAX request calls the form builder function for every change.
     // We can change how we build the form based on $form_state.
@@ -174,7 +178,7 @@ class batterycalcAjaxForm extends FormBase {
     $form['powertrain']['Powertrain_Container']['Regen_Capacity'] = [
         '#type' => 'number',
         '#step' => 1,
-        '#default_value' => 100,
+        '#default_value' => 50,
         '#title' => $this->t('Regenerative Braking %'),
         '#required'=> TRUE,
         '#suffix' => '<div class="error" id="regen_braking"></div>',
@@ -497,6 +501,7 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'select',
         '#options' => $this->getCellList(CELL_DB_NAME),
         '#empty_option' => $this->t('- Select a lithium ion cell -'),
+        '#default_value' => $this->getCellOption(1,CELL_DB_NAME),
         '#ajax' => [
             'callback' => '::updateCell',
             'wrapper' => 'cell-wrapper',
@@ -624,40 +629,15 @@ class batterycalcAjaxForm extends FormBase {
             '#suffix' => '<div class="error" id = "ee_internal_resistance"></div></div>'
         ];
     }
+    $form['PlotlyBatt'] =  [
+        '#type' => 'markup',
+        '#markup' => '<div id = "battPlot"></div>',
+            '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
+        ];
     $form['PackParameters'] = [
         '#type' => 'container',
         '#markup' => '<div id="packParameters" class="alert alert-primary">Battery Pack Specifications here...</div>'
         ];
-    $form['plot_data']= [
-        '#type' => 'container',
-        '#attributes' => ['id' => 'plot-data'],
-    ];
-    $form['plot_data']['Regen_Energy'] =  [ 
-        '#type' => 'textarea',
-        '#default_value' =>  '',
-        '#attributes' => ['class' => ['plot_data',]]
-    ];
-    $form['plot_data']['NoRegen_Energy'] = [ 
-        '#type' => 'textarea',
-        '#default_value' =>  '',
-        '#attributes' => ['class' => ['plot_data',]]
-    ];
-    $form['plot_data']['Power_Cycle'] = [ 
-        '#type' => 'textarea',
-        '#default_value' => '',
-        '#attributes' => ['class' => ['plot_data',]]
-    ];
-    $form['plot_data']['Continuous_Power'] = [
-        '#type' => 'textarea',
-        '#default_value' =>  '',
-        '#attributes' => ['class' => ['plot_data',]]
-    ];
-    $form['plot_data']['Peak_Power'] = [ 
-        '#type' => 'textarea',
-        '#default_value' =>  '',
-        '#attributes' => ['class' => ['plot_data',]]
-    ];
-
     $form['CalculatePackParameters'] = [
         '#type' =>'button',
         '#value' => $this->t('Calculate Pack Parameters'),
@@ -826,96 +806,98 @@ public function plotData($form, FormStateInterface $form_state) {
 * an array of speed values second by second.
 */
 public function speed_array(array $form, FormStateInterface $form_state){
-    return array_map('floatval',explode(",",(string)$form_state->getValue('Vehicle_Speed')));
+    return array_map(function($v){return $v / 3.6;},
+        array_map('floatval', explode(",",
+        (string)$form_state->getValue('Vehicle_Speed')))); //speed in m/s
 }
 
 /**
- * Inertial Power
+ * calculates the total forces for each speed in the array
  * 
  * @param array $form
  * this form
  * @param FromStateInterface $form_state
  * the variable that holds the state of this form
- * 
+ *
  * @return array
  * an array of power values second by second.
+ *  
  */
-public function inertial_power($form, FormStateInterface $form_state){
-
-    $speed = $this->speed_array($form, $form_state);
-    $mass = $form_state->getValue('Vehicle_Mass');
-    $dt = 1;
-    $power = [];
-
-    for ($i = 0; $i < count($speed)-1; $i++) {
-        array_push($power, $mass * ($speed[$i+1] - $speed[$i]) / $dt / 3.6 
-                                  * $speed[$i+1] / 3.6 );
-    }
-
-    return $power;   //[W]
-}
-
-/**
- * road load power
- * m * g * Cr *cos(alpha) + m * g * sin(alpha) * v
- * 
- * @param array $form
- * this form
- * @param FromStateInterface $form_state
- * the variable that holds the state of this form
- * 
- * @return array
- * an array of power values second by second.
-*/
-public function road_load_power(array &$form, FormStateInterface $form_state){
-
+public function total_forces($form, FormStateInterface $form_state){
     $speed = $this->speed_array($form, $form_state);
     $mass = $form_state->getValue('Vehicle_Mass');
     $alpha = $form_state->getValue('Road_Slope')*M_PI/180;
     $rr = $form_state->getValue('Rolling_Resistance');
-    $dt = 1; //time step, 1sec
-    $power = [];
-
-    for ($i = 0; $i < count($speed); $i++){
-        array_push($power, $mass * gravity 
-                 * ($rr * cos($alpha) + sin($alpha) )
-                 * $speed[$i] / 3.6 );
-    }
-
-    return $power;  //[w]
-}
-
-/**
- * aerodynamic drag power
- * 0.5 * rho * Cd * A * v^3
- * 
- * @param array $form
- * this form
- * @param FromStateInterface $form_state
- * the variable that holds the state of this form
- * 
- * @return array
- * an array of power values second by second.
- */
-public function aero_drag_power(array &$form, FormStateInterface $form_state){
-    $speed = $this->speed_array($form, $form_state);
     $Cd = $form_state->getValue('Drag_Coefficient');
     $rho = $form_state->getValue('Air_Density');
-    $frontalArea = $form_state->getValue('Frontal_Area');
-    $dt = 1;
-    $power = [];
+    $A = $form_state->getValue('Frontal_Area');
+    $dt = 1; //time step, 1sec
 
-    for ($i = 0; $i < count($speed); $i++){
-        array_push($power, 0.5 * $rho *  $Cd * $frontalArea 
-                                             * pow($speed[$i]/ 3.6, 2)
-                                             * $speed[$i] / 3.6 );
+    $total_forces = [];
+
+    foreach ($speed as $k => $v) {
+        $total_forces[] = $mass * (($v - ( ($k-1) < 0 ? 0 : $speed[$k-1])) 
+                + GRAVITY * $rr * cos($alpha) 
+                + GRAVITY * sin($alpha))
+                + 0.5 * $rho * $Cd * $A * $v * $v;
     }
 
-    return $power;  //[w]
+    return $total_forces;
 }
+public function total_cycle_power($form, FormStateInterface $form_state){
+    $speed = $this->speed_array($form, $form_state);
+    $forces = $this->total_forces($form, $form_state);
 
+    return array_map(function($f, $s){
+        return $f * $s / 1000; //kW
+    }, $forces, $speed);
+}
+public function motor_power_available_continuous($form, FormStateInterface $form_state){
+    return ( $form_state->getValue('Front_Motor_Power_Continuous') ?? 0 ) 
+         + (  $form_state->getValue('Rear_Motor_Power_Continuous') ?? 0 );
+}
+public function motor_power_available_peak($form, FormStateInterface $form_state){
+    return ( $form_state->getValue('Front_Motor_Power_Peak') ?? 0 ) 
+         + ( $form_state->getValue('Rear_Motor_Power_Peak') ?? 0 );
+}
+public function motor_power_actual_continuous($form, FormStateInterface $form_state){
+    $power_dmnd = $this->total_cycle_power($form, $form_state);
+    $motorPower = $this->motor_power_available_continuous($form, $form_state);
+
+    $eff = $form_state->getValue('Powertrain_Efficiency');
+    $regen = $form_state->getValue('Regen_Capacity') / 100;
+
+    return array_map(function($p) use ($eff, $motorPower, $regen){
+        if ($p / $eff >= $motorPower){
+            return $motorPower;
+        }
+        if ($p / $eff < -$motorPower * $regen){
+            return -$motorPower * $regen;
+        }
+        return $p / $eff;
+    }, $power_dmnd);
+}
+public function motor_power_actual_peak($form, FormStateInterface $form_state){
+    $power_dmnd = $this->total_cycle_power($form, $form_state);
+    $motorPower = $this->motor_power_available_peak($form, $form_state);
+
+    $eff = $form_state->getValue('Powertrain_Efficiency');
+    $regen = $form_state->getValue('Regen_Capacity') / 100;
+
+    return array_map(function($p){
+
+        if ($p / $eff >= $motorPower){
+            return $motorPower;
+        }
+        if ($p / $eff < -$motorPower * $regen){
+            return -$motorPower * $regen;
+        }
+        return $p / $eff;
+    }, $power_dmnd);
+}
 /**
- * cycle power
+ * 
+ * cycle energy with regen
  * 
  * @param array $form
  * this form
@@ -925,21 +907,31 @@ public function aero_drag_power(array &$form, FormStateInterface $form_state){
  * @return array
  * an array of cycle power demand values second by second.
  */
-public function cycle_power($form, FormStateInterface $form_state){
+public function cycle_energy_regen_on($form, FormStateInterface $form_state){
 
-    $inertial_power = $this->inertial_power($form, $form_state);
-    $road_load_power = $this->road_load_power($form, $form_state);
-    $aero_load_power = $this->aero_drag_power($form, $form_state);
-
-    $cycle_power = array_map(function($a, $b, $c){
-            return $a + $b +$c;
-    }, $inertial_power, $road_load_power, $aero_load_power);
-
-    // for($i = 0;  $i < $size; $i++){
-    //     $cycle_power[$i] = $inertial_power[$i] + $road_load_power[$i] + $aero_load_power[$i];
-    // }
+    $regen = $form_state->getValue('Regen_Capacity') / 100 ;
+    $actual_power = $this->motor_power_actual_continuous($form, $form_state);
     
-    return $cycle_power;
+    $total = 0;
+    return array_map(function($v) use(&$total, $regen){
+         return $total += ( ($v >= 0) ? $v : $v * $regen ) / 3600;        
+    }, $actual_power);
+
+}
+
+/**
+ * cycle energy without regen
+ * 
+ * 
+ * 
+ */
+public function cycle_energy_regen_off($form, FormStateInterface $form_state){
+    $power_dmnd = $this->total_cycle_power($form, $form_state);
+
+    $total = 0;
+    return array_map(function($v) use(&$total){
+        return $total += $v / 3600;        
+    }, $power_dmnd);
 }
 
 /**
@@ -958,14 +950,10 @@ public function energy_per_km($form, FormStateInterface $form_state){
     $formField = $form_state->getValues();
 
     $speed = $this->speed_array($form, $form_state);
-    $distance = array_sum($speed)/3600; 
+    $distance = array_sum($speed) / 1000; 
     $range = $formField['Vehicle_Range'];
     $useable_capacity = $formField['Useable_Capacity'] / 100;
     $regen_capacity = $formField['Regen_Capacity'] / 100;
-
-    $inertiaE= $this->inertial_energy($form, $form_state);
-    $roadLoadE = $this->road_load_energy($form, $form_state);
-    $aeroE = $this->aero_drag_energy($form, $form_state);
 
     $efficiency = $formField['Powertrain_Efficiency'];
     $ancillary_energy_per_km = $formField['Ancillary_Energy'];
@@ -978,10 +966,11 @@ public function energy_per_km($form, FormStateInterface $form_state){
     $regen_continuous = $regen_capacity * $motor_power_continuous;
     $regen_peak = $regen_capacity * $motor_power_peak;
 
-    $energy_per_km = ((array_sum($inertiaE) + array_sum($roadLoadE) + array_sum($aeroE)) / $distance + $ancillary_energy_per_km)
+    $energy_per_km = (array_sum($this->cycle_energy_regen_on($form, $form_state))
+                    / $distance + $ancillary_energy_per_km)
                     / $efficiency; // [wh/km]
 
-    $packEnergy = $energy_per_km * $range / $useable_capacity / 1000; //[kwh]
+    $packEnergy = round($energy_per_km * $range / $useable_capacity / 1000, 2); //[kwh]
 
     $text = $this->t('<i>The energy requirement of this vehicle is @efficiency Wh/km.
                       To achieve a range of @range km on the cycle this vehicle requires a battery of @batterySize kWh 
@@ -993,6 +982,7 @@ public function energy_per_km($form, FormStateInterface $form_state){
                     ]);
 
     $ajax_response->addCommand(new HtmlCommand('#results', $text));
+    $ajax_response->addCommand(new InvokeCommand('#pack_energy_container', 'val', [$packEnergy]));
     
     return $ajax_response;
 }
@@ -1012,6 +1002,9 @@ protected function getCellDB($dbname){
     return json_decode($result, true);
 }
 
+protected function getCellOption($cell_index,$dbname){
+    return $this->getCell($cell_index, $dbname);
+}
 /**
  * Returns a list of cells.
  *
@@ -1223,7 +1216,7 @@ public function road_load_energy(array &$form, FormStateInterface $form_state){
     $energy = [];
 
     for ($i = 0; $i < count($speed); $i++){
-        array_push($energy, $mass * gravity * ($rr * cos($alpha) + sin($alpha) )
+        array_push($energy, $mass * GRAVITY * ($rr * cos($alpha) + sin($alpha) )
                  * $speed[$i]*1000/3600 
                  * $dt / 3600);
     }

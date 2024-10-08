@@ -33,9 +33,7 @@
     top: 1px;
     transform: rotate(1.4deg);
 }
-.user-select-none, .svg-container {
-    height: 860px !important; /* fixing issue with plotly height switch between 100% and 450px */
-}
+
 .main-svg {
     /* width:100%; */
 }

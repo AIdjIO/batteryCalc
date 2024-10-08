@@ -7,16 +7,43 @@ import * as batt from './batterycalc.js'
         attach: function attach(context, settings) {
             let traces = []; // hold all plot lines data
 
-            var layout = {
-                title: 'Vehicle Test Cycle',
+            let layout2 = {
+                title: 'Speed Profile',
                 xaxis: {
-                    domain: [0.0, 0.9],
-                    // rangeslider: {},
+                    title: 'time [s]',
                     tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
                     tick0: 0,
                     dtick: 500,
                     anchor: 'y',
-                    // rangeslider: {},
+                    rangeslider: {},
+                    domain: [0, 1],
+                    showspikes: true,
+                    },
+                yaxis: {
+                    title: 'speed [km/h]',
+                    tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                    tick0: 0,
+                    dtick: 20,
+                    titlefont: {color: 'black'},
+                    tickfont: {color: '#black'},
+                    anchor: 'x',
+                    domain: [0, 1],
+                    showspikes: true,
+                },
+                showlegend: true,
+                autosize: true,
+                height: 450,
+                automargin: false,
+            };
+
+            let layout = {
+                title: 'Vehicle Test Cycle',
+                xaxis: {
+                    domain: [0.0, 0.9],
+                    tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                    tick0: 0,
+                    dtick: 500,
+                    anchor: 'y',
                     showspikes: true,
                     },
                 xaxis2: {
@@ -56,7 +83,7 @@ import * as batt from './batterycalc.js'
                     side: 'right',
                     position: 1,
                   },
-                  yaxis4: {
+                yaxis4: {
                     title: 'Current [A]',
                     titlefont: {color: '#d62728'},
                     tickfont: {color: '#d62728'},
@@ -65,8 +92,8 @@ import * as batt from './batterycalc.js'
                     side: 'right',
                     domain: [0, 0.48],
                     position: 1,
-                  },
-                  yaxis5:{
+                },
+                yaxis5:{
                     title: 'SOC [%]',
                     titlefont: {color: 'rgb(55, 128, 191)'},
                     tickfont: {color: 'rgb(55, 128, 191)'},
@@ -74,11 +101,11 @@ import * as batt from './batterycalc.js'
                     overlaying: 'y',
                     side: 'right',
                     position: 0.9,
-                  },
+                },
                 showlegend: true,
                 autosize: true,
                 height: 860,
-                automargin: true,
+                automargin: false,
                 legend: {
                     y: 0,
                     orientation: 'h',
@@ -99,44 +126,47 @@ import * as batt from './batterycalc.js'
                 },
                 // colorway : ['#f3cec9', '#e7a4b6', '#cd7eaf', '#a262a9', '#6f4d96', '#3d3b72', '#182844'],
                 colorway: ["red", "green", "blue", "goldenrod", "magenta"],
-            };
-            
+            };            
 
             let [labels, speeds]  = [...batt.getData()];
             // console.log(speeds);
-            const trace1 = {
+            const speed1 = {
                 x: labels,
                 y: speeds.map(v => v * 3.6),
+                hovertemplate: '%{y:.2f}<i>km/h</i>',
                 name : 'Speed',
                 type : 'scatter',
-                mode : 'lines',
+                mode : 'lines+markers',
                 line : {
                     color:'black',
                     shape: 'linear',
                     width: 1,
                     },
-                // marker: {
-                //     size: 4,
-                //     color: speeds,
-                // },
+                    marker: {
+                        size:0
+                    },
             };
+
+            const speed2 = {...speed1};
+
+            speed2.marker.size = 4;
+            speed2.marker.color = speeds;
 
             const config = {
                 scrollZoom: true,
                 responsive: true,
-                // editable: true
+                editable: true
             }
             
-            traces.push(trace1)
+            traces.push(speed1)
 
             Plotly.newPlot( 'speedPlot', traces, layout, config );
+            Plotly.newPlot('speedPlotPreview', [speed2], layout2);
 
             batt.calculateSpeedInfo(speeds);
 
             let textareaSpeed = document.getElementsByTagName("textarea")[0];
             textareaSpeed.addEventListener('keyup', batt.updatePlotly.bind(this, traces, layout, config));
-
-            const projTitle = document.getElementById('edit-environment');
 
             let cyclePowerDmndBtn = document.getElementById('cycle_power_dmnd');
             let motorPowerContBtn = document.getElementById('motor_power_cont');
@@ -155,9 +185,6 @@ import * as batt from './batterycalc.js'
             cycleCurrentCont.addEventListener('click', batt.plotCurrentActualCont);
             cycleCurrentPeak.addEventListener('click', batt.plotCurrentActualPeak);
             cycleSOC.addEventListener('click', batt.plotSOCActualCont);
-            
-
-
         }
       };
 })(jQuery, Drupal)

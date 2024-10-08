@@ -23,4 +23,5 @@ chart_library:
     js/batterycalc.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
+    js/jquery/jquery-ui.js: {}
 

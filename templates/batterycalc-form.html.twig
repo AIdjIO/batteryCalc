@@ -1,73 +1,88 @@
 {{ form.form_build_id }}
 {{ form.form_id }}
 {{ form.form_token }}
-
 <div class="container p-0 m-0">
-
   <div class="row align-items-center text-center">
     {{ form.Batt_Title }}
-    <!-- {{ form.Plot }} -->
   </div>
-  <div class="row align-items-center">
     {{ form.Cycle_Select }}
-    <a href="https://assets.publishing.service.gov.uk/media/5a7984f440f0b642860d8c2d/ppr-354.pdf" target="_blank">
-      A reference book of driving cycles for use in the measurement of road vehicle emissions
-      </a>
+    <a href="https://assets.publishing.service.gov.uk/media/5a7984f440f0b642860d8c2d/ppr-354.pdf" target="_blank">A reference book of driving cycles for use in the measurement of road vehicle emissions </a>
     {{ form.Speed_Container }}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="bi bi-bar-chart"></i>Plot Functions</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a id="cycle_power_dmnd" class="nav-link">Cycle Power Demand</a></li>
-                <li class="nav-item"><a id="motor_power_cont" class="nav-link">Motor Power Continuous</a></li>
-                <li class="nav-item"><a id="motor_power_peak" class="nav-link">Motor Power Peak</a></li>
-                <li class="nav-item"><a id="cycle_current_continuous" class="nav-link">Cycle Current Continuous</a></li>
-                <li class="nav-item"><a id="cycle_current_peak" class="nav-link">Cycle Current Peak</a></li>
-                <li class="nav-item"><a id="cycle_energy_regen_off" class="nav-link">Cycle Energy (Regen Off)</a></li>
-                <li class="nav-item"><a id="cycle_energy_regen_on" class="nav-link">Cycle Energy (Regen On)</a></li>
-                <li class="nav-item"><a id="cycle_soc" class="nav-link">Cycle SOC</a></li>
-          </ul>
+    {{ form.Speed_Info_Container }}
+  {{ form.PlotlySpeedPreview }}
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="size-tab" data-bs-toggle="tab" data-bs-target="#size-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Battery Pack Size</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="spec-tab" data-bs-toggle="tab" data-bs-target="#spec-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Battery Pack Spec</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="size-tab-pane" role="tabpanel" aria-labelledby="size-tab" tabindex="0">
+        <div class="row align-items-center">
+          {{ form.powertrain }}
+          {{ form.packSize }}
+          {{ form.vehicle }}
+          {{ form.environment }}
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">
+                <i class="bi bi-bar-chart"></i>Plot Functions </a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a id="cycle_power_dmnd" class="nav-link">Cycle Power Demand</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="motor_power_cont" class="nav-link">Motor Power Continuous</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="motor_power_peak" class="nav-link">Motor Power Peak</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="cycle_current_continuous" class="nav-link">Cycle Current Continuous</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="cycle_current_peak" class="nav-link">Cycle Current Peak</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="cycle_energy_regen_off" class="nav-link">Cycle Energy (Regen Off)</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="cycle_energy_regen_on" class="nav-link">Cycle Energy (Regen On)</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="cycle_soc" class="nav-link">Cycle SOC</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          {{ form.PlotlySpeed }}
+        </div>
+        <div class="row align-items-center">
+          {{ form.CalculatePackSize }}
+        </div>
+        {{ form.Results }}
+      </div>
+      <div class="tab-pane fade" id="spec-tab-pane" role="tabpanel" aria-labelledby="spec-tab" tabindex="0">
+        <div class="row align-items-center">
+          {{ form.pack }}
+          <!-- <div class="col">{{ form.Pack_Energy_Container }}</div><div class="col">{{ form.Voltage_Architecture }}</div></div><div class="row align-items-center">
+            {{ form.Cell_Geom_Container }}
+        </div><div class="row align-items-center"><div class="col">{{ form.Cell_Mass }}</div><div class="col">{{ form.Cell_Capacity }}</div><div class="col">{{ form.C_rate }}</div><div class="row align-items-center"><div class="col">{{ form.Cell_Voltage_Min }}</div><div class="col">{{ form.Cell_Voltage_Nom }}</div><div class="col">{{ form.Cell_Voltage_Max }}</div></div></div> -->
+          {{ PlotlyBatt }}
+          <div class="row align-items-center">
+            {{ form.CalculatePackParameters }}
+          </div>
+          {{ form.PackParameters }}
+          {{ form.plots }}
+          {{ form.plot_data }}
         </div>
       </div>
-    </nav>
-    {{ form.Plotly }}
-    {{ form.Speed_Info_Container }}
-
-    {{ form.powertrain }}
-    {{ form.vehicle }}
-    {{ form.environment }}
+    </div>
   </div>
-  <div class="row align-items-center">
-    {{ form.CalculatePackSize }}
-  </div>
-  {{ form.Results }}
-  <div class="row align-items-center">
-    {{ form.pack }}
-    <!-- <div class="col">{{ form.Pack_Energy_Container }}</div>
-        <div class="col">{{ form.Voltage_Architecture }}</div>
-        </div>
-        <div class="row align-items-center">
-            {{ form.Cell_Geom_Container }}
-        </div>
-      <div class="row align-items-center">
-        <div class="col">{{ form.Cell_Mass }}</div>
-        <div class="col">{{ form.Cell_Capacity }}</div>
-        
-        <div class="col">{{ form.C_rate }}</div>
-        <div class="row align-items-center">
-          <div class="col">{{ form.Cell_Voltage_Min }}</div>
-          <div class="col">{{ form.Cell_Voltage_Nom }}</div>
-          <div class="col">{{ form.Cell_Voltage_Max }}</div>
-        </div> -->
-  </div>
-  <div class="row align-items-center">
-  {{ form.CalculatePackParameters }}
-  </div>
-  {{ form.PackParameters }}
-  {{ form.plots }}
-  {{ form.plot_data }}
-</div>

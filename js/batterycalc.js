@@ -30,7 +30,6 @@ export function getData(){
 export function calculateSpeedInfo(speeds){
     
     let speedInfo = document.getElementById('speed_info');
-
     // calculate the difference between 2 consecutive speed to get
     // acceleration values.
     let accelerationValues = speeds.map((v,i)=>((speeds[i+1] || 0) - v));
@@ -83,8 +82,7 @@ export function updatePlotly(traces, layout, config){
  * @returns array
  */
 export function acceleration(speeds) {
-
-    return speeds.map( (v,i) => ( (speeds[i+1] || v) - v) );
+    return speeds.map( (v,i) => ( v - (speeds[i-1] || 0)) );
 }
 /**
  * calculate all forces on vehicle asuming sample time of 1s.
@@ -97,13 +95,12 @@ export function total_forces(speeds) {
     let mass = document.getElementById('edit-vehicle-mass').value;
     let Cd = document.getElementById('edit-drag-coefficient').value;
     let A = document.getElementById('edit-frontal-area').value;
-    let Crr = document.getElementById('edit-rolling-resistance').value;    
-    let range = document.getElementById('edit-vehicle-range').value;
+    let Crr = document.getElementById('edit-rolling-resistance').value;  
     let rho = document.getElementById('edit-air-density').value;
     let alpha = document.getElementById('edit-road-slope').value;
 
 
-    return speeds.map((v,i) =>( mass * (((speeds[i+1] || v) - v) 
+    return speeds.map((v,i) =>( mass * ((v - (speeds[i-1] || 0) ) 
                                         + GRAVITY * Crr * Math.cos(alpha)
                                         + GRAVITY * Math.sin(alpha))
                                         + 0.5 * rho * Cd * A * v * v ));    
@@ -140,22 +137,18 @@ export function totalMotorPowerPeak(){
  * @returns motor power peak
  */
 export function motorPwrActualCont(speeds){
-    let power_dmnd = total_cycle_power( speeds );
+    let powerDmnd = total_cycle_power( speeds );
     let motorPower = totalMotorPowerCont();
 
     //powertrain efficiency (conversion from electrical to mechanical)
     let eff = document.getElementById('edit-powertrain-efficiency').value;
     let regen = document.getElementById('edit-regen-capacity').value;
 
-
-    return power_dmnd.map(v => {
-        if (v / eff >=0 && v / eff < motorPower) {
-            return v / eff;
-        }
+    return powerDmnd.map(v => {
         if (v / eff >= motorPower){
             return motorPower;
         }
-        if (v / eff < 0 && v / eff < -motorPower * regen / 100) {
+        if (v / eff < -motorPower * regen / 100) {
             return -motorPower * regen / 100;
         }
         return v / eff;
@@ -179,13 +172,10 @@ export function motorPwrActualPeak(speeds){
     let regen = document.getElementById('edit-regen-capacity').value;
 
     return power_dmnd.map(v => {
-        if (v / eff >=0 && v<motorPower) {
-            return v;
-        }
         if (v / eff >= motorPower){
             return motorPower;
         }
-        if (v / eff < 0 && v / eff <-motorPower*regen/100) {
+        if (v / eff <-motorPower*regen/100) {
             return -motorPower*regen/100;
         }
         return v / eff;
@@ -206,7 +196,7 @@ export function SOCCont(speeds){
     let current=currentActualCont(speeds);
     let soc = 100;
     
-    return current.map((v => soc = Math.min(soc,100) - 100 * v / C / 3600))
+    return current.map((i => soc = Math.min(soc,100) - 100 * i / C / 3600))
 }
 
 /**
@@ -230,7 +220,7 @@ export function SOCPeak(speeds){
  * Contiunous current
  * (v -Ri)*i = P, Ri2 -vi + P = 0
  * @param {array} speeds 
- * @returns {aaray} of current for motor in continuous operation
+ * @returns {array} of current for motor in continuous operation
  */
 export function currentActualCont(speeds){
     let actualPwrCont = motorPwrActualCont(speeds);
@@ -265,12 +255,17 @@ export function cycle_energy(speeds, regen_status, regen_value){
     if (arguments.length === 2) regen_value = 0;
     let power = motorPwrActualCont(speeds);
     let sum = 0 ;
-    return power.map((sum = 0, n =>  sum += n / 3600 
+    return power.map((sum = 0, n =>  sum += n  / 3600
                                     * ( 1 * ( n > 0 || (regen_status && !!regen_value) ))
                                     * ( ( regen_value ) / 100 * ( n < 0 ) || 1)  
                                     )) ;
 }
 
+/**
+ * Add SOC trace to plot
+ * @param {object} e 
+ * @returns 
+ */
 export function plotSOCActualCont(e){
     e.preventDefault();
     let traces = document.getElementById('speedPlot').data
@@ -297,6 +292,11 @@ export function plotSOCActualCont(e){
     });
 }
 
+/**
+ * Add continuous current trace to plot
+ * @param {object} e 
+ * @returns 
+ */
 export function plotCurrentActualCont(e){
     e.preventDefault();
     let traces = document.getElementById('speedPlot').data
@@ -322,6 +322,11 @@ export function plotCurrentActualCont(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotCurrentActualPeak(e){
     e.preventDefault();
     let traces = document.getElementById('speedPlot').data
@@ -347,6 +352,11 @@ export function plotCurrentActualPeak(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotEnergyRegenOn(e){
     e.preventDefault();
     let traces = document.getElementById('speedPlot').data
@@ -375,6 +385,11 @@ export function plotEnergyRegenOn(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotEnergyRegenOff(e){
     e.preventDefault();
 
@@ -402,6 +417,11 @@ export function plotEnergyRegenOff(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotPwrDmnd(e){
     e.preventDefault();
     
@@ -429,6 +449,11 @@ export function plotPwrDmnd(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotPwrActualCont(e){
     e.preventDefault();
     
@@ -492,6 +517,11 @@ export function plotPwrActualCont(e){
     });
 }
 
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
 export function plotPwrActualPk(e){
     e.preventDefault();
     
@@ -504,10 +534,7 @@ export function plotPwrActualPk(e){
     let [labels, speeds] = [...getData()];
     
     let actualPwrCont = motorPwrActualPeak( speeds );
-    let motorPwr = totalMotorPowerPeak();
-    // let xmin = Math.min(...labels);
-    // let xmax = Math.max(...labels);
-    
+    let motorPwr = totalMotorPowerPeak();    
     
     Plotly.addTraces('speedPlot', {
         name:'Motor Power Peak',
@@ -553,4 +580,9 @@ export function plotPwrActualPk(e){
             },
         visible: 'legendonly'
         });
+}
+
+export function skipPlot(name) {
+    let traces = document.getElementById('speedPlot').data
+    return (traces.map(v=>v.name).indexOf('Current Cont')>-1)
 }

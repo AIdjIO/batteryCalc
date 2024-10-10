@@ -33,7 +33,7 @@ class batterycalcAjaxForm extends FormBase {
   * {@inheritdoc}
   */
  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attributes'] = ['class' => 'row row-cols-lg-auto g-3 align-items-center needs-validation',];
+    $form['#attributes'] = ['class' => 'form-control form-control-sm align-items-start needs-validation',];
     $form['Batt_Title'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Project Title'),
@@ -57,11 +57,16 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'details',
         '#title' => $this->t('Environment'),
     ];
-    $form['PlotlySpeed'] =  [
+    $form['PlotlySpeedPackSize'] =  [
         '#type' => 'markup',
-        '#markup' => '<div id = "speedPlot"></div>',
+        '#markup' => '<div id = "speedPlotPackSize"></div>',
          '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
       ];
+    $form['PlotlySpeedPackSpec'] =  [
+        '#type' => 'markup',
+        '#markup' => '<div id = "speedPlotPackSpec"></div>',
+        '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
+    ];
     $form['Speed_Info_Container'] = [
         '#type' => 'container',
         '#markup' => '<div id="speed_info" class="alert alert-primary"></div>',
@@ -92,7 +97,7 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'textarea',
         '#required' => TRUE,
         '#default_value' =>  implode(',',CycleData::$cycleData['WLTC3b']['data']),
-        '#suffix' => '<div class="error" id="vehicle_speed_error"></div>',
+        '#suffix' => '<div class="error" id = "vehicle_speed_error"></div>',
     ];
     $form['PlotlySpeedPreview'] =  [
         '#type' => 'markup',
@@ -629,9 +634,9 @@ class batterycalcAjaxForm extends FormBase {
             '#suffix' => '<div class="error" id = "ee_internal_resistance"></div></div>'
         ];
     }
-    $form['PlotlyBatt'] =  [
+    $form['PlotlyBattDB'] =  [
         '#type' => 'markup',
-        '#markup' => '<div id = "battPlot"></div>',
+        '#markup' => '<div id = "battPlotDB"></div>',
             '#allowed_tags' => ['canvas', 'button','span','svg', 'path', 'div'],  
         ];
     $form['PackParameters'] = [
@@ -959,8 +964,11 @@ public function energy_per_km($form, FormStateInterface $form_state){
     $ancillary_energy_per_km = $formField['Ancillary_Energy'];
 
     // vehicle Motor Power [kW]
-    $motor_power_continuous = $formField['Front_Motor_Power_Continuous'] ?? 0 + $formField['Rear_Motor_Power_Continuous'] ?? 0;
-    $motor_power_peak = $formField['Front_Motor_Power_Peak'] ?? 0 + $formField['Rear_Motor_Power_Peak'] ?? 0;
+    $motor_power_continuous = $formField['Front_Motor_Power_Continuous'] ?? 0 
+                            + $formField['Rear_Motor_Power_Continuous'] ?? 0;
+
+    $motor_power_peak = $formField['Front_Motor_Power_Peak'] ?? 0 
+                      + $formField['Rear_Motor_Power_Peak'] ?? 0;
 
     // Regen Power [kW]
     $regen_continuous = $regen_capacity * $motor_power_continuous;
@@ -972,12 +980,15 @@ public function energy_per_km($form, FormStateInterface $form_state){
 
     $packEnergy = round($energy_per_km * $range / $useable_capacity / 1000, 2); //[kwh]
 
-    $text = $this->t('<i>The energy requirement of this vehicle is @efficiency Wh/km.
-                      To achieve a range of @range km on the cycle this vehicle requires a battery of @batterySize kWh 
+    $text = $this->t('<i>The energy requirement of this vehicle is @efficiency Wh/km or @efficiency2 mi/kWh.
+                      To achieve a range of @range km or @range_mi miles on the cycle this vehicle requires a battery of @batterySize kWh 
                       if @useable_capacity% of the battery capacity is useable.',
-                    ['@efficiency' => round($energy_per_km,2),
-                    '@batterySize' =>round($packEnergy,2),
-                    '@range' => round($range,2),
+                    [
+                    '@efficiency' => round($energy_per_km, 2),
+                    '@efficiency2' => round(1000/$energy_per_km/1.609, 2),
+                    '@batterySize' =>round($packEnergy, 2),
+                    '@range' => round($range, 2),
+                    '@range_mi' => round($range / 1.609, 1),
                     '@useable_capacity' => $useable_capacity * 100
                     ]);
 

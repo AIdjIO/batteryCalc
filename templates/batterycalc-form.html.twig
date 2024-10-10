@@ -1,7 +1,7 @@
 {{ form.form_build_id }}
 {{ form.form_id }}
 {{ form.form_token }}
-<div class="container p-0 m-0">
+<div class="container">
   <div class="row align-items-center text-center">
     {{ form.Batt_Title }}
   </div>
@@ -9,7 +9,7 @@
     <a href="https://assets.publishing.service.gov.uk/media/5a7984f440f0b642860d8c2d/ppr-354.pdf" target="_blank">A reference book of driving cycles for use in the measurement of road vehicle emissions </a>
     {{ form.Speed_Container }}
     {{ form.Speed_Info_Container }}
-  {{ form.PlotlySpeedPreview }}
+    {{ form.PlotlySpeedPreview }}
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="size-tab" data-bs-toggle="tab" data-bs-target="#size-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Battery Pack Size</button>
@@ -20,15 +20,16 @@
     </ul>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="size-tab-pane" role="tabpanel" aria-labelledby="size-tab" tabindex="0">
-        <div class="row align-items-center">
-          {{ form.powertrain }}
-          {{ form.packSize }}
-          {{ form.vehicle }}
-          {{ form.environment }}
+        <div class="container">
+        <div class="row align-items-start">
+          <div class="col align-top">{{ form.powertrain }}</div>
+          <div class="col align-top">{{ form.vehicle }}</div> 
+          <div class="col align-top">{{ form.environment }}</div>            
+            {{ form.CalculatePackSize }}
+            {{ form.Results }}
+            </div>
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">
-                <i class="bi bi-bar-chart"></i>Plot Functions </a>
+              <a class="navbar-brand">Plot Functions</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -44,45 +45,57 @@
                     <a id="motor_power_peak" class="nav-link">Motor Power Peak</a>
                   </li>
                   <li class="nav-item">
-                    <a id="cycle_current_continuous" class="nav-link">Cycle Current Continuous</a>
+                    <a id="cycle_energy_regen_off_size" class="nav-link">Cycle Energy (Regen Off)</a>
                   </li>
                   <li class="nav-item">
-                    <a id="cycle_current_peak" class="nav-link">Cycle Current Peak</a>
-                  </li>
-                  <li class="nav-item">
-                    <a id="cycle_energy_regen_off" class="nav-link">Cycle Energy (Regen Off)</a>
-                  </li>
-                  <li class="nav-item">
-                    <a id="cycle_energy_regen_on" class="nav-link">Cycle Energy (Regen On)</a>
-                  </li>
-                  <li class="nav-item">
-                    <a id="cycle_soc" class="nav-link">Cycle SOC</a>
+                    <a id="cycle_energy_regen_on_size" class="nav-link">Cycle Energy (Regen On)</a>
                   </li>
                 </ul>
-              </div>
             </div>
           </nav>
-          {{ form.PlotlySpeed }}
+          {{ form.PlotlySpeedPackSize }}
         </div>
-        <div class="row align-items-center">
-          {{ form.CalculatePackSize }}
         </div>
-        {{ form.Results }}
-      </div>
+      
       <div class="tab-pane fade" id="spec-tab-pane" role="tabpanel" aria-labelledby="spec-tab" tabindex="0">
+        <div class="container">
         <div class="row align-items-center">
           {{ form.pack }}
           <!-- <div class="col">{{ form.Pack_Energy_Container }}</div><div class="col">{{ form.Voltage_Architecture }}</div></div><div class="row align-items-center">
             {{ form.Cell_Geom_Container }}
         </div><div class="row align-items-center"><div class="col">{{ form.Cell_Mass }}</div><div class="col">{{ form.Cell_Capacity }}</div><div class="col">{{ form.C_rate }}</div><div class="row align-items-center"><div class="col">{{ form.Cell_Voltage_Min }}</div><div class="col">{{ form.Cell_Voltage_Nom }}</div><div class="col">{{ form.Cell_Voltage_Max }}</div></div></div> -->
-          {{ PlotlyBatt }}
-          <div class="row align-items-center">
-            {{ form.CalculatePackParameters }}
-          </div>
+          {{ PlotlyBattDB }}
+          {{ form.CalculatePackParameters }}
           {{ form.PackParameters }}
-          {{ form.plots }}
           {{ form.plot_data }}
         </div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand">Plot Functions</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a id="cycle_current_continuous" class="nav-link">Cycle Current Continuous</a>
+              </li>
+              <li class="nav-item">
+                <a id="cycle_current_peak" class="nav-link">Cycle Current Peak</a>
+              </li>
+              <li class="nav-item">
+                <a id="cycle_energy_regen_off_spec" class="nav-link">Cycle Energy (Regen Off)</a>
+              </li>
+              <li class="nav-item">
+                <a id="cycle_energy_regen_on_spec" class="nav-link">Cycle Energy (Regen On)</a>
+              </li>
+              <li class="nav-item">
+                <a id="cycle_soc" class="nav-link">Cycle SOC</a>
+              </li>
+            </ul>
+        </div>
+      </nav>
+        {{ form.PlotlySpeedPackSpec }}
       </div>
     </div>
   </div>
+</div>

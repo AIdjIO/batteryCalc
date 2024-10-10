@@ -41,3 +41,39 @@
     visibility: hidden;
     display:none;
 }
+
+#speedPlotPackSize, #speedPlotPackSpec {
+    width: 100%;
+}
+
+.fieldset {
+    margin-top: 0;
+}
+
+.olivero-details__wrapper{
+    margin:0 !important;
+}
+
+.form-item, .form-item__label {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.form-control-sm {
+    font-size: 0.8rem !important;
+}
+
+#size-tab, #spec-tab{
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+}
+
+.main-content__container.container{
+    padding:0px !important;
+}
+
+#block-olivero-breadcrumbs,
+#block-olivero-page-title {
+    visibility: hidden;
+    display:none;
+}

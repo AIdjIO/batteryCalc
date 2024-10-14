@@ -198,7 +198,7 @@ export function motorPwrActual(speeds, curr = 'peak'){
  * @returns {array} soc
  */
 export function SOC(speeds, curr){
-    let E = 1e3*document.getElementById("pack_energy_container").value;
+    let E = 1e3*document.getElementById("edit-pack-size").value;
     let V = document.getElementById('edit-voltage-architecture-0').checked? 400 : 800;
 
     let C = E/V;
@@ -271,7 +271,8 @@ export function plotSOCActual(id, curr, data){
 
     Plotly.addTraces(id, {
         name: trace_name,
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group1', 
         x: data.labels, 
         y: soc,
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>%</i>',
@@ -308,10 +309,11 @@ export function plotCurrentActual(id, curr = 'cont', data, e){
 
     Plotly.addTraces(id, {
         name: trace_name,
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group2',
         x: data.labels, 
         y: current,
-        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>A</i>',
+        hovertemplate: '%{x}s<br>%{y:.2f}<i>A</i>',
         xaxis: 'x',
         yaxis: 'y4',
         mode : 'lines',
@@ -345,7 +347,8 @@ export function plotCycleEnergy(id, regen='off', trace_name, curr, data, e){
 
     Plotly.addTraces(id, {
         name: trace_name,
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group1',
         x: data.labels, 
         y: energy,
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kWh</i>',
@@ -376,7 +379,8 @@ export function plotPwrDmnd(id, data, e){
 
     Plotly.addTraces(id, {
         name:'Power Demand',
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group1',
         x: data.labels, 
         y: power,
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
@@ -415,7 +419,8 @@ export function plotMotorTrqDmnd(id, data){
 
     Plotly.addTraces(id, {
         name: trace_name,
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group2',
         x: data.labels, 
         y: motorTrq,
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>Nm</i>',
@@ -446,6 +451,7 @@ export function plotPowerLimit(id, curr, data){
     Plotly.addTraces(id, {
         name:'Max Power Lim '+ curr,
         type: 'scatter', 
+        showlegend: false,
         x: data.labels, 
         y: data.labels.map( v => motorPwr ),
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
@@ -462,9 +468,10 @@ export function plotPowerLimit(id, curr, data){
     });
     Plotly.addTraces(id, {
         name:'Min Power Lim ' + curr,
-        type: 'scatter', 
+        type: 'scatter',
+        showlegend: false,
         x: data.labels, 
-        y: data.labels.map(v=>-motorPwr),
+        y: data.labels.map( v=>-motorPwr ),
         mode : 'lines',
         xaxis: 'x',
         yaxis: 'y2',
@@ -496,7 +503,8 @@ export function plotPwrActual(id, curr, data){
 
     Plotly.addTraces(id, {
         name: trace_name,
-        type: 'scatter', 
+        type: 'scatter',
+        legendgroup: 'group1',
         x: data.labels, 
         y: actualPwr,
         hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
@@ -534,15 +542,17 @@ export function updatePlotly(){
     let layout = {
         layout_cycle_preview : {
             title: 'Speed Profile',
+            showlegend: false,
+            height: 450,
             xaxis: {
+                domain: [0.0, 1],
                 title: 'time [s]',
                 tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
                 tick0: 0,
                 dtick: 500,
                 anchor: 'y',
-                rangeslider: {},
-                domain: [0, 1],
                 showspikes: true,
+                rangeslider: {},
                 },
             yaxis: {
                 title: 'speed [km/h]',
@@ -552,34 +562,34 @@ export function updatePlotly(){
                 titlefont: {color: 'black'},
                 tickfont: {color: '#black'},
                 anchor: 'x',
-                domain: [0, 1],
                 showspikes: true,
-            },
-            showlegend: false,
+            },            
             autosize: true,
-            height: 450,
             automargin: false,
             paper_bgcolor: '#fcf2d7',// DaVinci paper color
             plot_bgcolor: '#faebd7', //Antique white
+            modebar: {
+                add: [
+                    "v1hovermode",
+                    "hoverclosest", 
+                    "hovercompare", 
+                    "togglehover", 
+                    "togglespikelines",
+                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
+            ]
+            },
         },
         layout_vehicle : {
             title: 'Vehicle Power and Energy',
             xaxis: {
-                domain: [0.0, 1],
+                domain: [0.0, 1.0],
+                title: 'time [s]',
                 tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
                 tick0: 0,
                 dtick: 500,
                 anchor: 'y',
                 showspikes: true,
                 },
-            xaxis2: {
-                domain: [0.0, 0.8],
-                title: 'time [s]',
-                anchor: 'y2',
-                categoryorder: 'array',
-                domain: [0, 1],
-                showspikes: true,
-            },
             yaxis: {
                 title: 'speed [km/h]',
                 tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
@@ -588,8 +598,30 @@ export function updatePlotly(){
                 titlefont: {color: 'black'},
                 tickfont: {color: '#black'},
                 anchor: 'x',
-                domain: [0.52, 1],
                 showspikes: true,
+            },            
+            autosize: true,
+            automargin: false,
+            paper_bgcolor: '#fcf2d7',// DaVinci paper color
+            plot_bgcolor: '#faebd7', //Antique white
+            modebar: {
+                add: [
+                    "v1hovermode",
+                    "hoverclosest", 
+                    "hovercompare", 
+                    "togglehover", 
+                    "togglespikelines",
+                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
+            ]
+            },
+            xaxis2: {
+                title: 'time [s]',
+                anchor: 'y2',
+                domain: [0, 0.95],
+                showspikes: true,
+            },
+            yaxis: {
+                domain: [ 0.52, 1.0 ],
             },
             yaxis2: {
                 title: 'Power [kW]',
@@ -620,34 +652,27 @@ export function updatePlotly(){
                 position: 1,
             },
             showlegend: true,
-            autosize: true,
             height: 860,
-            automargin: false,
             legend: {
                 y: 0,
                 orientation: 'h',
                 traceorder: 'reversed',
-                font: {size: 16},
+                font: {
+                    family: 'sans-serif',
+                    size: 12,
+                    color: '#000'
+                },
+                bgcolor: '#E2E2E2',
+                bordercolor: '#FFFFFF',
+                borderwidth: 2,   
                 yref: 'paper',
-            },
-            paper_bgcolor: '#fcf2d7',// DaVinci paper color
-            plot_bgcolor: '#faebd7', //Antique white
-            modebar: {
-                add: [
-                    "v1hovermode",
-                    "hoverclosest", 
-                    "hovercompare", 
-                    "togglehover", 
-                    "togglespikelines",
-                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
-            ]
             },
             // colorway : ['#f3cec9', '#e7a4b6', '#cd7eaf', '#a262a9', '#6f4d96', '#3d3b72', '#182844'],
             colorway: ["red", "green", "blue", "goldenrod", "magenta"],
             annotations: [
                 {
                     x: xMidPoint,
-                    y: totalPeakMotorPower + 5,
+                    y: totalPeakMotorPower - 5,
                     xref: 'x',
                     yref: 'y2',
                     text: 'Max Motor Peak Power',
@@ -655,7 +680,7 @@ export function updatePlotly(){
                 },
                 {
                     x: xMidPoint,
-                    y: -totalPeakMotorPower - 5,
+                    y: -totalPeakMotorPower + 5,
                     xref: 'x',
                     yref: 'y2',
                     text: 'Min Motor Peak Power',
@@ -681,23 +706,15 @@ export function updatePlotly(){
         },
         layout_battery : {
             title: 'Battery Electrical Loads',
-            xref:'paper',
             xaxis: {
                 domain: [0.0, 0.9],
+                title: 'time [s]',
                 tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
                 tick0: 0,
                 dtick: 500,
                 anchor: 'y',
                 showspikes: true,
                 },
-            xaxis2: {
-                domain: [0.0, 0.8],
-                title: 'time [s]',
-                anchor: 'y2',
-                categoryorder: 'array',
-                domain: [0, 1],
-                showspikes: true,
-            },
             yaxis: {
                 title: 'speed [km/h]',
                 tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
@@ -706,8 +723,32 @@ export function updatePlotly(){
                 titlefont: {color: 'black'},
                 tickfont: {color: '#black'},
                 anchor: 'x',
-                domain: [0.52, 1],
                 showspikes: true,
+            },            
+            autosize: true,
+            automargin: false,
+            paper_bgcolor: '#fcf2d7',// DaVinci paper color
+            plot_bgcolor: '#faebd7', //Antique white
+            modebar: {
+                add: [
+                    "v1hovermode",
+                    "hoverclosest", 
+                    "hovercompare", 
+                    "togglehover", 
+                    "togglespikelines",
+                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
+            ]
+            },
+            xref:'paper',
+            xaxis2: {
+                domain: [ 0, 0.95 ],
+                title: 'time [s]',
+                anchor: 'y2',
+                categoryorder: 'array',
+                showspikes: true,
+            },
+            yaxis: {
+                domain: [ 0.5, 1 ],
             },
             yaxis2: {
                 title: 'Power [kW]',
@@ -725,48 +766,42 @@ export function updatePlotly(){
                 anchor: 'x',
                 overlaying: 'y',
                 side: 'right',
-                position: 1,
+                position: 0.9,
             },
             yaxis4: {
                 title: 'Current [A]',
                 titlefont: {color: '#d62728'},
                 tickfont: {color: '#d62728'},
-                anchor: 'x',
+                anchor: 'free',
                 overlaying: 'y2',
-                side: 'right',
+                side: 'left',
                 domain: [0, 0.48],
-                position: 1,
+                position: 0,
             },
             yaxis5:{
                 title: 'SOC [%]',
                 titlefont: {color: 'rgb(55, 128, 191)'},
                 tickfont: {color: 'rgb(55, 128, 191)'},
-                anchor: 'x',
+                anchor: 'free',
                 overlaying: 'y',
                 side: 'right',
-                position: 0.9,
+                position: 1,
             },
-            showlegend: true,
-            autosize: true,
             height: 860,
-            automargin: false,
+            showlegend: true,
             legend: {
-                y: 0,
+                y: 1,
                 orientation: 'h',
                 traceorder: 'reversed',
-                font: {size: 16},
+                font: {
+                    family: 'sans-serif',
+                    size: 12,
+                    color: '#000'
+                },
+                bgcolor: '#E2E2E2',
+                bordercolor: '#FFFFFF',
+                borderwidth: 2,                    
                 yref: 'paper',
-            },
-            paper_bgcolor: '#fcf2d7',// DaVinci paper color
-            plot_bgcolor: '#faebd7', //Antique white
-            modebar: {
-                add: ["v1hovermode",
-                "hoverclosest", 
-                "hovercompare", 
-                "togglehover", 
-                "togglespikelines",
-                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
-            ]
             },
             // colorway : ['#f3cec9', '#e7a4b6', '#cd7eaf', '#a262a9', '#6f4d96', '#3d3b72', '#182844'],
             colorway: ["red", "green", "blue", "goldenrod", "magenta"],
@@ -778,7 +813,7 @@ export function updatePlotly(){
     const speed1 = {
         x: data.labels,
         y: data.speeds.map(v => v * 3.6),
-        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>km/h</i>',
+        hovertemplate: '%{x:d}s<br>%{y:.1f}<i>km/h</i>',
         name : 'Speed',
         type : 'scatter',
         mode : 'lines',
@@ -796,6 +831,7 @@ export function updatePlotly(){
     speed2.marker = {};
     speed2.marker.size = 3;
     speed2.marker.color = data.speeds;
+    speed2.legendgroup = 'group2';
 
     let icon1 = {
         'width': 512,
@@ -810,7 +846,6 @@ export function updatePlotly(){
             name: 'Fullscreen',
             icon: icon1,
             click: function(gd) {
-                console.log(gd);
                 gd.classList.toggle('fullscreen');
               Plotly.Plots.resize(gd);
             }

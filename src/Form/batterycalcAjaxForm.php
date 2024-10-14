@@ -137,7 +137,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Differential gear ratio'),
         // '#required' => TRUE,
         '#default_value' => 2.57,
-        '#prefix' => '<div class="row align-items-start p-auto"><div class="col p-0 border-end">',
+        '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drive_differential_ratio"></div>',
         // '#ajax' => [
         //     'callback' => '::energy_per_km',
@@ -189,7 +189,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Powertrain Efficiency [-]'),
         // '#required' => TRUE,
         '#default_value'=> 0.9,
-        '#prefix' => '<div class="col p-0">',
+        '#prefix' => '<div class="col">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "powertrain_efficiency"></div>',
         // '#ajax' => [
         //     'callback' => '::energy_per_km',
@@ -374,7 +374,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Vehicle Mass <output class="badge bg-secondary"></output>[kg]'),
 		'#default_value' => 2000,
         // '#required' => TRUE,
-        '#prefix' => '<div class="row align-items-start p-auto"><div class="col p-0 border-end">',
+        '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="vehicle_mass"></div>',
         // '#ajax' => [
         //     'callback' => '::energy_per_km',
@@ -417,7 +417,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Rolling Resistance [-]'),
         // '#required' => TRUE,
 		'#default_value' => 0.012,
-        '#prefix' => '<div class="col p-0">',
+        '#prefix' => '<div class="col">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "rolling_resitance"></div>',
         // '#ajax' => [
         //     'callback' => '::energy_per_km',
@@ -490,15 +490,15 @@ class batterycalcAjaxForm extends FormBase {
         <path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
       </svg>',
         '#attributes' => [ 'class' => ['btn', 'btn-primary', 'btn-lg'] ],
-        '#ajax' => [
-            'callback' => '::energy_per_km',
-            'wrapper'=> 'Results',
-            'disable-refocus' => TRUE,
-            'progress' => [
-              'type' => 'throbber',
-              'message' => $this->t('Calculating entry...'),
-            ]
-        ]
+        // '#ajax' => [
+        //     'callback' => '::energy_per_km',
+        //     'wrapper'=> 'Results',
+        //     'disable-refocus' => TRUE,
+        //     'progress' => [
+        //       'type' => 'throbber',
+        //       'message' => $this->t('Calculating entry...'),
+        //     ]
+        // ]
     ];
     $form['pack'] = [
         '#type' => 'details',
@@ -511,10 +511,10 @@ class batterycalcAjaxForm extends FormBase {
     $form['pack']['Pack_Energy_Container'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Pack Energy'),
+        '#attributes' => ['id' => 'pack_energy_container' ],
     ];
     $form['pack']['Pack_Energy_Container']['Pack_Size'] = [
         '#type' => 'number',
-        '#attributes' => ['id' => 'pack_energy_container' ],
         '#title' => $this->t('Pack Energy [kWh]'),
         // '#required' => TRUE,
         '#default_value' => 85,
@@ -600,7 +600,7 @@ class batterycalcAjaxForm extends FormBase {
             '#min' => 0.1,
             '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
             (float) $this->getCell($cell, CELL_DB_NAME)['dia_mm'] : (float) $this->getCell($cell, CELL_DB_NAME)['depth_mm'],
-            '#prefix' => '<div class="col p-0">',
+            '#prefix' => '<div class="col">',
         ];
         $form['pack']['cell_wrapper']['Diameter'] = [
             '#type' => 'hidden',

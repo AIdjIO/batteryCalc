@@ -1,4 +1,4 @@
-/**totalMotorPower
+/**
  * This function reads values from textarea and processes
  * the data to generate speed array [m/s] and data labels
  * ready to use for plotting purpose.
@@ -19,13 +19,20 @@ export function getData(){
 }
 
 /**
+ * calculates cycle distance
+ * @param {array} speeds expect speeds in km/h at 1s sample time
+ * @returns {array} of 2 arrays of speed data and labels.
+ */
+export function cycleDistance(speeds){
+    return ((speeds.reduce((a, b) => a + b, 0) || 0) );
+}
+/**
  * generates output text of vehicle speed cycle calculated statistics
  * this function calculates the min, max, average speed of the cycle
  * and the total distance in km.
  * speed cycle is specified in km/h with a sample time of one second.
  * 
- * @param {array} speeds - array of 2 arrays containing labels and
- * and speed data respectively.
+ * @param {array} speeds
  */
 export function calculateSpeedInfo(speeds){
     
@@ -47,7 +54,7 @@ export function calculateSpeedInfo(speeds){
                             / negativeAccValues.length )
                             . toFixed(3);
 
-    let totalDistance = ((speeds.reduce((a, b) => a + b, 0) || 0) );
+    let totalDistance = cycleDistance(speeds);
     let averageSpeed = (totalDistance / speeds.length || 0).toFixed(2) ;
 
     speedInfo.innerHTML = `<i>This drive cycle has a minimum speed of ${ (3.6 * Math.min(...speeds)).toFixed(2)||0 } km/h, 
@@ -56,29 +63,6 @@ export function calculateSpeedInfo(speeds){
                                  an average deceleration of ${ averageDeceleration } m/s²and 
                                  a total distance of ${ (totalDistance / 1000).toFixed(2) } km</i>`
 }
-
-/**
- * Callback function to update plot of vehicle speed (using Plotly library)
- * @param {array} traces - an array of arrays of plot data 
- * @param {object} layout - an object of plot settings
- */
-export function updatePlotly(speedPlots, config){
-
-    let [labels, data] = [...getData()];
-    let plotData = speedPlots;
-    
-    calculateSpeedInfo(data);
-
-    let plots = document.getElementsByClassName('js-plotly-plot');
-
-    for( let p of plots )  {
-        plotData[p.id].traces[0].x = labels;
-        plotData[p.id].traces[0].y = data.map( v =>v * 3.6 );
-        Plotly.react(p,
-                    [plotData[p.id].traces[0]],
-                    plotData[p.id].layout,
-                    config )};
-}   
 
 /**
  * calculate acceleration values from speed array [m/s2]
@@ -90,8 +74,9 @@ export function updatePlotly(speedPlots, config){
 export function acceleration(speeds) {
     return speeds.map( (v,i) => ( v - (speeds[i-1] || 0)) );
 }
+
 /**
- * calculate all forces on vehicle asuming sample time of 1s.
+ * calculate all forces [N] on vehicle asuming sample time of 1s.
  * @param {array} speeds 
  * @returns {array} 
  */
@@ -103,23 +88,70 @@ export function total_forces(speeds) {
     let A = document.getElementById('edit-frontal-area').value;
     let Crr = document.getElementById('edit-rolling-resistance').value;  
     let rho = document.getElementById('edit-air-density').value;
-    let alpha = document.getElementById('edit-road-slope').value;
+    let alpha = document.getElementById('edit-road-slope').value * Math.PI/180;
 
 
-    return speeds.map((v,i) =>( mass * ((v - (speeds[i-1] || 0) ) 
+    return (speeds).map((v,i) =>( mass * ((v - (speeds[i-1] || 0) ) 
                                         + GRAVITY * Crr * Math.cos(alpha)
                                         + GRAVITY * Math.sin(alpha))
                                         + 0.5 * rho * Cd * A * v * v ));    
 }
 
 /**
- * Calculates the total power demand 
- * from the speed cycle in [kw]
+ * calculate wheel radius [m] on based on tyre dimensions.
+ * @returns {float} 
+ */
+function wheel_radius(){
+    let wheel = document .getElementById('edit-wheel-radius');
+    let R = wheel.options[wheel.selectedIndex].text; //[m]
+
+    let [tyre_width, tyre_AR, rim_dia] = R.split(/[\/,R]/);
+    
+    let wheel_R = (100 * +tyre_AR / +tyre_width + +rim_dia / 2) / 1000;
+
+    return wheel_R;
+}
+
+/**
+ * calculate wheel torque [NM] on vehicle asuming sample time of 1s.
  * @param {array} speeds 
+ * @param {string} wheel //example format 205/55R16
+ * @returns {array} 
+ */
+export function wheel_torque(speeds) {
+    let R = wheel_radius();
+    return total_forces(speeds).map(v => v * R)
+}
+
+/**
+ * calculate wheel torque [NM] on vehicle asuming sample time of 1s.
+ * @param {object} data 
+ * @returns {array} 
+ */
+export function motorTrqDmnd(speeds) {
+
+    let diff_ratio = document .getElementById('edit-drive-ratio-differential').value; //[m]
+    let gear_ratio = document .getElementById('edit-drive-ratio-gear').value; //[m]
+    return wheel_torque(speeds).map(v=>v/diff_ratio/gear_ratio);
+}
+/**
+ * Calculates the total power demand [kWh]
+ * from the speed cycle in [kw] not including ancillary loads
+ * @param {object} data 
  * @returns {array}
  */
 export function total_cycle_power(speeds){
-    return total_forces(speeds).map((f, i) => f * speeds[i] / 1000);
+
+    let distance = cycleDistance(speeds)/1000; //[km]
+    
+    //get ancillary loads
+    let ancillaryLoadEnergy = document.getElementById('edit-ancillary-energy').value
+    / 1000; //[kWh/km]
+    let ancillaryLoadEnergyPerSecond = ancillaryLoadEnergy 
+                  * distance / speeds.length //[kwh/s];
+
+    return total_forces(speeds).map( (f, i) => f * speeds[i] / 1000
+                                     + ancillaryLoadEnergyPerSecond );
 }
 
 export function totalMotorPower(curr = 'cont'){
@@ -141,7 +173,7 @@ export function totalMotorPower(curr = 'cont'){
  * @param {array} speeds 
  * @returns motor power peak
  */
-export function motorPwrActual(speeds, curr = 'cont'){
+export function motorPwrActual(speeds, curr = 'peak'){
     let powerDmnd = total_cycle_power( speeds );
     let motorPower = totalMotorPower( curr );
 
@@ -167,7 +199,7 @@ export function motorPwrActual(speeds, curr = 'cont'){
  */
 export function SOC(speeds, curr){
     let E = 1e3*document.getElementById("pack_energy_container").value;
-    let V = document.getElementById('edit-voltage-architecture-0').isChecked? 400 : 800;
+    let V = document.getElementById('edit-voltage-architecture-0').checked? 400 : 800;
 
     let C = E/V;
 
@@ -185,12 +217,19 @@ export function SOC(speeds, curr){
  */
 export function currentActual(speeds, curr){
     let actualPwr = motorPwrActual(speeds, curr);
-    let V = 800; // pack voltage
+    let voltage_architecture = document.querySelectorAll('input[type="radio"]:checked');
+    let V;
+
+   for (let radio of voltage_architecture){
+    if (radio.checked){
+        V = radio.value == "0" ? 400: 800;
+    }
+   }
+
     let R = 0.1; // pack resistance
 
     return actualPwr.map(p => (V - Math.sqrt(V * V - 4 * R * p * 1000)) / 2 / R )
 }
-
 
 /**
  * Calculates energy consumption over the cycle
@@ -201,12 +240,14 @@ export function currentActual(speeds, curr){
  * @returns {array} energy with regen
  */
 export function cycle_energy(speeds, regen_status, regen_value, curr = 'cont'){
-    if (arguments.length === 2) regen_value = 0;
+    let regen_factor = regen_status? regen_value : 0;
+
     let power = motorPwrActual(speeds, curr);
+
     let sum = 0 ;
     return power.map((sum = 0, n =>  sum += n  / 3600
-                                    * ( 1 * ( n > 0 || (regen_status && !!regen_value) ))
-                                    * ( ( regen_value ) / 100 * ( n < 0 ) || 1)  
+                                    * ( 1 * ( n > 0 || (regen_status && !!regen_factor) ))
+                                    * ( ( regen_factor ) / 100 * ( n < 0 ) || 1)  
                                     )) ;
 }
 
@@ -216,8 +257,8 @@ export function cycle_energy(speeds, regen_status, regen_value, curr = 'cont'){
  * @param {string} id
  * @returns 
  */
-export function plotSOCActual(id, curr, e){
-    e.preventDefault();
+export function plotSOCActual(id, curr, data){
+    // e.preventDefault();
     let traces = document.getElementById(id).data
 
     let trace_name = 'SOC Cont';
@@ -226,14 +267,14 @@ export function plotSOCActual(id, curr, e){
 
     if (traces.map(v=>v.name).indexOf(trace_name) > -1) return;
 
-    let [labels, speeds] = [...getData()];
-    let soc = SOC(speeds, curr);
+    let soc = SOC(data.speeds, curr);
 
     Plotly.addTraces(id, {
         name: trace_name,
         type: 'scatter', 
-        x: labels, 
+        x: data.labels, 
         y: soc,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>%</i>',
         xaxis: 'x',
         yaxis: 'y5',
         mode : 'lines',
@@ -252,8 +293,8 @@ export function plotSOCActual(id, curr, e){
  * @param {string} id
  * @returns 
  */
-export function plotCurrentActual(id, curr = 'cont', e){
-    e.preventDefault();
+export function plotCurrentActual(id, curr = 'cont', data, e){
+    // e.preventDefault();
     let traces = document.getElementById(id).data
     let trace_name = 'Current Cont';
 
@@ -262,15 +303,15 @@ export function plotCurrentActual(id, curr = 'cont', e){
     }
     
     if (traces.map(v=>v.name).indexOf(trace_name)>-1) return;
-    
-    let [labels, speeds] = [...getData()];
-    let current = currentActual(speeds, curr);
+
+    let current = currentActual(data.speeds, curr);
 
     Plotly.addTraces(id, {
         name: trace_name,
         type: 'scatter', 
-        x: labels, 
+        x: data.labels, 
         y: current,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>A</i>',
         xaxis: 'x',
         yaxis: 'y4',
         mode : 'lines',
@@ -289,25 +330,25 @@ export function plotCurrentActual(id, curr = 'cont', e){
  * @param {string} regen, 'on' if regen taken into account, else 'off'
  * @returns 
  */
-export function plotCycleEnergy(id, regen='off', trace_name, curr, e){
-    e.preventDefault();
-    let traces = document.getElementById(id).data
+export function plotCycleEnergy(id, regen='off', trace_name, curr, data, e){
+    // e.preventDefault();
+    let traces = document.getElementById(id).data;
     let regen_value = 0;
     if (regen == 'on') {
         regen_value = document.getElementById('edit-regen-capacity').value
     }
 
     // don't replot trace if already plotted
-    if (traces.map(v=>v.name).indexOf(trace_name)>-1) return;
+    // if (traces && traces.map(v=>v.name).indexOf(trace_name)>-1) return;
 
-    let [labels, speeds] = [...getData()];
-    let energy = cycle_energy( speeds, true, regen_value, curr );
+    let energy = cycle_energy( data.speeds, regen == 'on', regen_value, curr );
 
     Plotly.addTraces(id, {
         name: trace_name,
         type: 'scatter', 
-        x: labels, 
+        x: data.labels, 
         y: energy,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kWh</i>',
         xaxis: 'x',
         yaxis: 'y3',
         mode : 'lines',
@@ -325,21 +366,20 @@ export function plotCycleEnergy(id, regen='off', trace_name, curr, e){
  * @param {object} e 
  * @returns 
  */
-export function plotPwrDmnd(id, e){
-    e.preventDefault();
-    
-    let traces = document.getElementById(id).data
+export function plotPwrDmnd(id, data, e){
+    // e.preventDefault();
+     let traces = document.getElementById(id).data
 
     if (traces.map(v=>v.name).indexOf('Power Demand')>-1) return;
 
-    let [labels, speeds] = [...getData()];
-    let power = total_cycle_power( speeds );
+    let power = total_cycle_power( data.speeds );
 
     Plotly.addTraces(id, {
         name:'Power Demand',
         type: 'scatter', 
-        x: labels, 
+        x: data.labels, 
         y: power,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
         xaxis: 'x',
         yaxis: 'y2',
         mode : 'lines',
@@ -349,37 +389,66 @@ export function plotPwrDmnd(id, e){
             smoothing: 1.3,
             width: 1,
             },
+        marker : {
+            mode : 'lines+markers',
+            size : 3,
+            color : '#9467bd',
+        }
+    });
+}
+
+/**
+ * Add SOC trace to plot
+ * @param {object} e, event object
+ * @param {string} id
+ * @returns 
+ */
+export function plotMotorTrqDmnd(id, data){
+    // e.preventDefault();
+    let traces = document.getElementById(id).data
+
+    let trace_name = 'Motor Torque Dmnd [Nm]';
+
+    if (traces.map(v=>v.name).indexOf(trace_name) > -1) return;
+
+    let motorTrq = motorTrqDmnd(data.speeds);
+
+    Plotly.addTraces(id, {
+        name: trace_name,
+        type: 'scatter', 
+        x: data.labels, 
+        y: motorTrq,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>Nm</i>',
+        xaxis: 'x',
+        yaxis: 'y4',
+        mode : 'lines',
+        line : {
+            color: 'rgb(55, 128, 191)',
+            shape: 'spline', 
+            smoothing: 1.3,
+            width: 1,
+            },
+        visible: 'legendonly',
     });
 }
 
 /**
  * 
- * @param {object} e 
- * @returns 
  */
-export function plotPwrActual(id, curr, e){
-    e.preventDefault();
-    
-    let traces = document.getElementById(id).data
+export function plotPowerLimit(id, curr, data){
+    let traces = document.getElementById(id).data;
 
-    let trace_name = 'Motor Power Continuous';
-
-    if (curr == 'peak') trace_name = 'Motor Power Peak';
-
-    if (traces.map(v=>v.name).indexOf(trace_name)>-1) return;
     if (traces.map(v=>v.name).indexOf('Max Power Lim ' + curr)>-1) return;
     if (traces.map(v=>v.name).indexOf('Min Power Lim ' + curr)>-1) return;
 
-    let [labels, speeds] = [...getData()];
-
-    let actualPwr = motorPwrActual( speeds, curr );
     let motorPwr = totalMotorPower( curr );
     
     Plotly.addTraces(id, {
         name:'Max Power Lim '+ curr,
         type: 'scatter', 
-        x: labels, 
-        y: labels.map(v=>motorPwr),
+        x: data.labels, 
+        y: data.labels.map( v => motorPwr ),
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
         mode : 'lines',
         xaxis: 'x',
         yaxis: 'y2',
@@ -394,8 +463,8 @@ export function plotPwrActual(id, curr, e){
     Plotly.addTraces(id, {
         name:'Min Power Lim ' + curr,
         type: 'scatter', 
-        x: labels, 
-        y: labels.map(v=>-motorPwr),
+        x: data.labels, 
+        y: data.labels.map(v=>-motorPwr),
         mode : 'lines',
         xaxis: 'x',
         yaxis: 'y2',
@@ -407,12 +476,30 @@ export function plotPwrActual(id, curr, e){
         fill: curr == 'cont' ? 'tozeroy' : 'tonexty',
         fillcolor: curr == 'cont' ? '#95CF95' : '#FFBF86',
     });
+}
+
+/**
+ * 
+ * @param {object} e 
+ * @returns 
+ */
+export function plotPwrActual(id, curr, data){
+    // e.preventDefault();
+    
+    let traces = document.getElementById(id).data;
+
+    let trace_name = (curr == 'peak')? 'Motor Power Peak' :'Motor Power Continuous';
+
+    if (traces.map(v=>v.name).indexOf(trace_name)>-1) return;
+
+    let actualPwr = motorPwrActual( data.speeds, curr );
 
     Plotly.addTraces(id, {
         name: trace_name,
         type: 'scatter', 
-        x: labels, 
+        x: data.labels, 
         y: actualPwr,
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>kW</i>',
         mode : 'lines',
         xaxis: 'x',
         yaxis: 'y2',
@@ -423,3 +510,346 @@ export function plotPwrActual(id, curr, e){
             },
     });
 }
+
+/**
+ * Callback function to update plot of vehicle speed (using Plotly library)
+ * @param {object} data - an array of arrays of plot data 
+ */
+export function updatePlotly(){
+
+    let data = {};
+    [data.labels, data.speeds] = [...getData()];
+
+    let plots = document.getElementsByClassName('js-plotly-plot');
+    let xMidPoint = (data.speeds).length / 2; //xaxis mid point
+    if (plots) { //if there are any plots, clear them
+        for ( let p of plots ) {
+            Plotly.purge(p);
+        }
+    }
+    
+    let totalPeakMotorPower = totalMotorPower( 'peak' );
+    let totalContMotorPower = totalMotorPower( 'cont' );
+
+    let layout = {
+        layout_cycle_preview : {
+            title: 'Speed Profile',
+            xaxis: {
+                title: 'time [s]',
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 500,
+                anchor: 'y',
+                rangeslider: {},
+                domain: [0, 1],
+                showspikes: true,
+                },
+            yaxis: {
+                title: 'speed [km/h]',
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 20,
+                titlefont: {color: 'black'},
+                tickfont: {color: '#black'},
+                anchor: 'x',
+                domain: [0, 1],
+                showspikes: true,
+            },
+            showlegend: false,
+            autosize: true,
+            height: 450,
+            automargin: false,
+            paper_bgcolor: '#fcf2d7',// DaVinci paper color
+            plot_bgcolor: '#faebd7', //Antique white
+        },
+        layout_vehicle : {
+            title: 'Vehicle Power and Energy',
+            xaxis: {
+                domain: [0.0, 1],
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 500,
+                anchor: 'y',
+                showspikes: true,
+                },
+            xaxis2: {
+                domain: [0.0, 0.8],
+                title: 'time [s]',
+                anchor: 'y2',
+                categoryorder: 'array',
+                domain: [0, 1],
+                showspikes: true,
+            },
+            yaxis: {
+                title: 'speed [km/h]',
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 20,
+                titlefont: {color: 'black'},
+                tickfont: {color: '#black'},
+                anchor: 'x',
+                domain: [0.52, 1],
+                showspikes: true,
+            },
+            yaxis2: {
+                title: 'Power [kW]',
+                titlefont: {color: 'rgb(148, 103, 189)'},
+                tickfont: {color: 'rgb(148, 103, 189)'},
+                anchor: 'x',
+                side: 'left',
+                domain: [0, 0.48],
+                showspikes: true,
+            },
+            yaxis3: {
+                title: 'Energy [kWh]',
+                titlefont: {color: '#d62728'},
+                tickfont: {color: '#d62728'},
+                anchor: 'x',
+                overlaying: 'y',
+                side: 'right',
+                position: 1,
+            },
+            yaxis4: {
+                title: 'Motor_Torque [Nm]',
+                titlefont: {color: '#d62728'},
+                tickfont: {color: '#d62728'},
+                anchor: 'x',
+                overlaying: 'y2',
+                side: 'right',
+                domain: [0, 0.48],
+                position: 1,
+            },
+            showlegend: true,
+            autosize: true,
+            height: 860,
+            automargin: false,
+            legend: {
+                y: 0,
+                orientation: 'h',
+                traceorder: 'reversed',
+                font: {size: 16},
+                yref: 'paper',
+            },
+            paper_bgcolor: '#fcf2d7',// DaVinci paper color
+            plot_bgcolor: '#faebd7', //Antique white
+            modebar: {
+                add: [
+                    "v1hovermode",
+                    "hoverclosest", 
+                    "hovercompare", 
+                    "togglehover", 
+                    "togglespikelines",
+                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
+            ]
+            },
+            // colorway : ['#f3cec9', '#e7a4b6', '#cd7eaf', '#a262a9', '#6f4d96', '#3d3b72', '#182844'],
+            colorway: ["red", "green", "blue", "goldenrod", "magenta"],
+            annotations: [
+                {
+                    x: xMidPoint,
+                    y: totalPeakMotorPower + 5,
+                    xref: 'x',
+                    yref: 'y2',
+                    text: 'Max Motor Peak Power',
+                    showarrow: false,
+                },
+                {
+                    x: xMidPoint,
+                    y: -totalPeakMotorPower - 5,
+                    xref: 'x',
+                    yref: 'y2',
+                    text: 'Min Motor Peak Power',
+                    showarrow: false,
+                },
+                {
+                    x: xMidPoint,
+                    y: totalContMotorPower + 5,
+                    xref: 'x',
+                    yref: 'y2',
+                    text: 'Max Motor Continuous Power',
+                    showarrow: false,
+                },
+                {
+                    x: xMidPoint,
+                    y: -totalContMotorPower - 5,
+                    xref: 'x',
+                    yref: 'y2',
+                    text: 'Min Motor Continuous Power',
+                    showarrow: false,
+                }
+            ],
+        },
+        layout_battery : {
+            title: 'Battery Electrical Loads',
+            xref:'paper',
+            xaxis: {
+                domain: [0.0, 0.9],
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 500,
+                anchor: 'y',
+                showspikes: true,
+                },
+            xaxis2: {
+                domain: [0.0, 0.8],
+                title: 'time [s]',
+                anchor: 'y2',
+                categoryorder: 'array',
+                domain: [0, 1],
+                showspikes: true,
+            },
+            yaxis: {
+                title: 'speed [km/h]',
+                tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+                tick0: 0,
+                dtick: 20,
+                titlefont: {color: 'black'},
+                tickfont: {color: '#black'},
+                anchor: 'x',
+                domain: [0.52, 1],
+                showspikes: true,
+            },
+            yaxis2: {
+                title: 'Power [kW]',
+                titlefont: {color: 'rgb(148, 103, 189)'},
+                tickfont: {color: 'rgb(148, 103, 189)'},
+                anchor: 'x',
+                side: 'left',
+                domain: [0, 0.48],
+                showspikes: true,
+            },
+            yaxis3: {
+                title: 'Energy [kWh]',
+                titlefont: {color: '#d62728'},
+                tickfont: {color: '#d62728'},
+                anchor: 'x',
+                overlaying: 'y',
+                side: 'right',
+                position: 1,
+            },
+            yaxis4: {
+                title: 'Current [A]',
+                titlefont: {color: '#d62728'},
+                tickfont: {color: '#d62728'},
+                anchor: 'x',
+                overlaying: 'y2',
+                side: 'right',
+                domain: [0, 0.48],
+                position: 1,
+            },
+            yaxis5:{
+                title: 'SOC [%]',
+                titlefont: {color: 'rgb(55, 128, 191)'},
+                tickfont: {color: 'rgb(55, 128, 191)'},
+                anchor: 'x',
+                overlaying: 'y',
+                side: 'right',
+                position: 0.9,
+            },
+            showlegend: true,
+            autosize: true,
+            height: 860,
+            automargin: false,
+            legend: {
+                y: 0,
+                orientation: 'h',
+                traceorder: 'reversed',
+                font: {size: 16},
+                yref: 'paper',
+            },
+            paper_bgcolor: '#fcf2d7',// DaVinci paper color
+            plot_bgcolor: '#faebd7', //Antique white
+            modebar: {
+                add: ["v1hovermode",
+                "hoverclosest", 
+                "hovercompare", 
+                "togglehover", 
+                "togglespikelines",
+                //   "drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"
+            ]
+            },
+            // colorway : ['#f3cec9', '#e7a4b6', '#cd7eaf', '#a262a9', '#6f4d96', '#3d3b72', '#182844'],
+            colorway: ["red", "green", "blue", "goldenrod", "magenta"],
+        }
+    }
+
+    calculateSpeedInfo(data.speeds);
+
+    const speed1 = {
+        x: data.labels,
+        y: data.speeds.map(v => v * 3.6),
+        hovertemplate: '%{x:f}s<br>%{y:.2f}<i>km/h</i>',
+        name : 'Speed',
+        type : 'scatter',
+        mode : 'lines',
+        line : {
+            color:'black',
+            shape: 'linear',
+            width: 1,
+            },
+    };
+
+    // copy object without reference, 
+    const speed2 = JSON.parse(JSON.stringify(speed1));
+
+    speed2.mode = 'lines+markers'
+    speed2.marker = {};
+    speed2.marker.size = 3;
+    speed2.marker.color = data.speeds;
+
+    let icon1 = {
+        'width': 512,
+        'height': 512,
+        'path': "M512 512v-208l-80 80-96-96-48 48 96 96-80 80z M512 0h-208l80 80-96 96 48 48 96-96 80 80z M0 512h208l-80-80 96-96-48-48-96 96-80-80z M0 0v208l80-80 96 96 48-48-96-96 80-80z"
+      }
+    const config = {
+        scrollZoom: true,
+        responsive: true,
+        editable: false,
+        modeBarButtonsToAdd: [{
+            name: 'Fullscreen',
+            icon: icon1,
+            click: function(gd) {
+                console.log(gd);
+                gd.classList.toggle('fullscreen');
+              Plotly.Plots.resize(gd);
+            }
+          }]
+    }
+    
+    let speedPlots = {
+        'speedPlotPreview':{
+            'traces': [speed2],
+            'layout': layout.layout_cycle_preview,
+        },
+        'speedPlotPackSize':{
+            'traces': [speed1],
+            'layout': layout.layout_vehicle,
+        },
+        'speedPlotPackSpec':{
+            'traces': [speed1],
+            'layout': layout.layout_battery,
+        },
+    };
+
+    Object.keys(speedPlots).forEach(key => {
+        Plotly.newPlot(key,
+                        speedPlots[key].traces,
+                        speedPlots[key].layout,
+                        config
+                        );
+    });
+
+    plotPowerLimit('speedPlotPackSize', 'peak', data);
+    plotPowerLimit('speedPlotPackSize', 'cont', data);
+    plotPwrActual('speedPlotPackSize', 'peak', data);
+    plotMotorTrqDmnd('speedPlotPackSize', data);
+    plotPwrDmnd('speedPlotPackSize', data);
+    plotCycleEnergy('speedPlotPackSize', 'on', 'Energy regen on', 'peak', data);
+    plotCycleEnergy('speedPlotPackSize', 'off', 'Energy regen off', 'peak', data);
+    plotCycleEnergy('speedPlotPackSpec', 'on', 'Energy w/ regen', 'cont',data);
+    plotCycleEnergy('speedPlotPackSpec', 'off', 'Energy w/o regen', 'cont',data);
+    plotCurrentActual('speedPlotPackSpec', 'cont',data);
+    plotCurrentActual('speedPlotPackSpec', 'peak',data);
+    plotSOCActual('speedPlotPackSpec', 'cont',data);
+}   

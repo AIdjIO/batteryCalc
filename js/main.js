@@ -6,34 +6,32 @@ import * as batt from './batterycalc.js'
     Drupal.behaviors.plotlyjs = {
         attach: function attach(context, settings) {
 
-            let textareaSpeed = document.getElementsByTagName("textarea")[0];
-            textareaSpeed.addEventListener('keyup', batt.updatePlotly);
+            let inputs = [...document.querySelectorAll(
+                            'input[type=number], select, input[type=radio], textarea')];
 
-            let ranges = [...document.querySelectorAll('input[type=range]')];
+            inputs.forEach(input => {
+                // range.setAttribute("onchange",
+                //             "this.parentElement.nextElementSibling.value = this.value");
 
-            ranges.forEach(range => {
-                range.setAttribute("onchange",
-                            "this.parentElement.nextElementSibling.value = this.value");
-
-                range.parentElement.nextElementSibling.value = range.value;
-                range.addEventListener('change', batt.updatePlotly);
+                // range.parentElement.nextElementSibling.value = range.value;
+                input.addEventListener('change', batt.updatePlotly);
                         });
 
-            document.getElementById('edit-voltage-architecture')
-            .addEventListener('change', batt.updatePlotly); 
+            // document.getElementById('edit-voltage-architecture')
+            // .addEventListener('change', batt.updatePlotly); 
 
             let cell_db = document.getElementById('edit-cell-db');
-            cell_db.addEventListener('change', batt.updatePlotly);
+            // cell_db.addEventListener('change', batt.updatePlotly);
             let event = new Event('change');
             cell_db.dispatchEvent(event);       
             
-            let cell_wrapper = document.getElementById('cell-wrapper');
+            // let cell_wrapper = document.getElementById('cell-wrapper');
 
-            let cell_inputs = cell_wrapper.querySelectorAll('input[type=number]');
+            // let cell_inputs = cell_wrapper.querySelectorAll('input[type=number]');
 
-            for (let cells of cell_inputs){
-                cells.addEventListener('change', batt.updatePlotly);
-            }
+            // for (let cells of cell_inputs){
+            //     cells.addEventListener('change', batt.updatePlotly);
+            // }
             
             $(document).on('shown.bs.tab', function (event) {
                 var doc = $(".tab-pane.active .js-plotly-plot");

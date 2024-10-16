@@ -130,77 +130,45 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'fieldset',
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Ratio_Differential'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.01,
         '#min' => 1,
         '#max' => 5,
         '#title' => $this->t('Differential gear ratio'),
-        // '#required' => TRUE,
         '#default_value' => 2.57,
         '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drive_differential_ratio"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Ratio_Gear'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.01,
         '#min' => 1,
         '#max' => 5,
         '#title' => $this->t('Drive gear ratio'),
-        // '#required' => TRUE,
         '#default_value' => 1,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drive_ratio_gear"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['powertrain']['Powertrain_Container']['Ancillary_Energy'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.1,
         '#min' => 1,
         '#max' => 5000,
         '#title' => $this->t('Ancillaries [wh/km]'),
-        // '#required' => TRUE,
         '#default_value'=> 10,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "ancillary_consumption"></div></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['powertrain']['Powertrain_Container']['Powertrain_Efficiency'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.01,
         '#min' => 0.01,
         '#max' => 1,
         '#title' => $this->t('Powertrain Efficiency [-]'),
-        // '#required' => TRUE,
         '#default_value'=> 0.9,
         '#prefix' => '<div class="col">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "powertrain_efficiency"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['powertrain']['Powertrain_Container']['Regen_Capacity'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.5,
         '#min' => 0,
         '#max' => 100,
@@ -209,21 +177,13 @@ class batterycalcAjaxForm extends FormBase {
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="regen_braking"></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Useable_Capacity'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step' => 0.5,
         '#min' => 50,
         '#max' => 100,
         '#default_value' => 95,
         '#title' => $this->t('Useable Capacity %'),
-        // '#required'=> TRUE,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="useable_capacity"></div></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Type'] = [
         '#type' => 'radios',
@@ -326,80 +286,46 @@ class batterycalcAjaxForm extends FormBase {
 
     $form['environment']['Environment_Container'] = [
         '#type' => 'fieldset',
-        // '#title' => $this->t('Environment Conditions'),
     ];
     $form['environment']['Environment_Container']['Air_Density'] = [
-        '#type' => 'range',
-        '#step'=>0.001,
+        '#type' => 'number',
+        '#step'=>0.0001,
         '#min' => 0,
         '#max' => 2,
         '#title' => $this->t('Air Density [kg/m3]'),
 		'#default_value' =>1.2041,
-        // '#required' => TRUE,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "air_density"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['environment']['Environment_Container']['Road_Slope'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step'=> 0.1,
         '#min' => 0,
         '#max' => 45,
         '#title' => $this->t('Road Slope [°]'),
-        // '#required' => TRUE,
 		'#default_value' => 0.0,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "road_slope"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['vehicle']['Vehicle_Container'] = [
         '#type'=>'fieldset',
-        // '#title' => $this->t('Vehicle Specification'),
     ];
     $form['vehicle']['Vehicle_Container']['Vehicle_Mass'] = [
-        '#type' => 'range',
-        '#step'=> 0.1,
+        '#type' => 'number',
+        '#step'=> 50,
         '#min' => 100,
         '#max' => 50000,
         '#title' => $this->t('Vehicle Mass <output class="badge bg-secondary"></output>[kg]'),
 		'#default_value' => 2000,
-        // '#required' => TRUE,
         '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="vehicle_mass"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['vehicle']['Vehicle_Container']['Frontal_Area'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step'=> 0.01,
         '#min' => 0.1,
         '#max' => 10,
         '#title' => $this->t('Frontal Area [m2]'),
 		'#default_value' => 2.5,
-        // '#required' => TRUE,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "frontal_area"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['vehicle']['Vehicle_Container']['Wheel_Radius'] = [
         '#type' => 'select',
@@ -410,56 +336,32 @@ class batterycalcAjaxForm extends FormBase {
         '#suffix' => '</div>',
     ];
     $form['vehicle']['Vehicle_Container']['Rolling_Resistance'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step'=> 0.001,
         '#min' => 0,
         '#max' => 1,
         '#title' => $this->t('Rolling Resistance [-]'),
-        // '#required' => TRUE,
 		'#default_value' => 0.012,
         '#prefix' => '<div class="col">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "rolling_resitance"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
 	$form['vehicle']['Vehicle_Container']['Drag_Coefficient'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step'=> 0.01,
         '#min' => 0,
         '#max' => 5,
         '#title' => $this->t('Aerodynamic Drag [-]'),
-        // '#required' => TRUE,
 		'#default_value' => 0.35,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drag_coefficient"></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
 	$form['vehicle']['Vehicle_Container']['Vehicle_Range'] = [
-        '#type' => 'range',
+        '#type' => 'number',
         '#step'=>1,
         '#min' => 10,
         '#max' => 2000,
-        '#default_value' => 500,
+        '#default_value' => 400,
         '#title' => $this->t('Vehicle Range [km]'),
-        // '#required' => TRUE,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="vehicle_range"></div></div>',
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper' => 'Results',
-        //     'disable-refocus' => FALSE,
-        //     'event' => 'change',
-        //     'effect' => 'fade',
-        // ],
     ];
     $form['actions'] = [
 		'#type' => 'actions',
@@ -490,15 +392,6 @@ class batterycalcAjaxForm extends FormBase {
         <path d="M4 2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
       </svg>',
         '#attributes' => [ 'class' => ['btn', 'btn-primary', 'btn-lg'] ],
-        // '#ajax' => [
-        //     'callback' => '::energy_per_km',
-        //     'wrapper'=> 'Results',
-        //     'disable-refocus' => TRUE,
-        //     'progress' => [
-        //       'type' => 'throbber',
-        //       'message' => $this->t('Calculating entry...'),
-        //     ]
-        // ]
     ];
     $form['pack'] = [
         '#type' => 'details',
@@ -516,7 +409,6 @@ class batterycalcAjaxForm extends FormBase {
     $form['pack']['Pack_Energy_Container']['Pack_Size'] = [
         '#type' => 'number',
         '#title' => $this->t('Pack Energy [kWh]'),
-        // '#required' => TRUE,
         '#default_value' => 85,
         '#suffix' => '<div class="error" id = "pack_energy"></div>'
     ];
@@ -552,8 +444,9 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Voltage_Nom'] = [
             '#type' => 'number',
             '#title' => $this->t('Nominal V [V]'),
-            '#step' => 0.1,
+            '#step' => 0.001,
             '#min' => 0.1,
+            '#max' => 4,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['nom_v'],
             '#prefix' => '<div class="row align-items-start p-auto"><div class="col">'
         ];
@@ -574,7 +467,9 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['C_rate'] = [
             '#type'=> 'number',
             '#title' =>$this->t('C-rate'),
-            '#min' => 0.1,
+            '#step' => 1,
+            '#min' => 1,
+            '#max' => 100,
             '#value' => 10,
             '#suffix' => '<div class="error" id="c_rate"></div>',
         ];
@@ -605,6 +500,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Diameter'] = [
             '#type' => 'hidden',
             '#title' => $this->t('Diameter [mm]'),
+            '#step' => 0.1,
             '#min' => 0.1,
             '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
             (float) $this->getCell($cell, CELL_DB_NAME)['dia_mm'] : (float) $this->getCell($cell, CELL_DB_NAME)['depth_mm'], //mm
@@ -612,17 +508,15 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Capacity'] = [
             '#type' => 'number',
             '#title' => $this->t('Capacity [Ah]'),
-            '#step' => 1,
+            '#step' => 0.1,
             '#min' => 0.1,
-            // '#required' => TRUE,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['ah_rate'],
         ];
         $form['pack']['cell_wrapper']['Cell_Mass'] = [
             '#type' => 'number',
             '#title' => $this->t('Mass [g]'),
-            '#step' => 100,
-            '#min' => 0.1,
-            // '#required' => TRUE,
+            '#step' => 1,
+            '#min' => 1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['mass_g'],
         ];
         $form['pack']['cell_wrapper']['Cell_Tab_Resistance'] = [ //[mOhm]
@@ -630,7 +524,6 @@ class batterycalcAjaxForm extends FormBase {
             '#title' => $this->t('Tab R [mOhm]'),
             '#step'=> 0.0001,
             '#min' => 0.0001,
-            // '#required' => TRUE,
             '#default_value' => 0.0030,
             '#suffix' => '<div class="error" id = "cell_tab_resistance"></div>'
         ];
@@ -639,17 +532,15 @@ class batterycalcAjaxForm extends FormBase {
             '#title' => $this->t('Internal R [Ohm]'),
             '#step'=> 0.001,
             '#min' => 0.001,
-            // '#required' => TRUE,
             '#default_value' => 0.014,
             '#suffix' => '<div class="error" id = "cell_internal_resistance"></div>'
         ];
         $form['pack']['cell_wrapper']['EE_Internal_Resistance'] = [ //[Ohm]
             '#type' => 'number',
-            '#title' => $this->t('EE internal R [Ohm]'),
-            '#step'=> 0.0001,
-            '#min' => 0.0001,
-            // '#required' => TRUE,
-            '#default_value' => 0.005,
+            '#title' => $this->t('EE internal R [mOhm]'),
+            '#step'=> 0.1,
+            '#min' => 0.1,
+            '#default_value' => 5,
             '#suffix' => '<div class="error" id = "ee_internal_resistance"></div></div>'
         ];
     }
@@ -748,8 +639,8 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
             $numCellsInSeries = ceil($packVoltage/$cellVoltage);
             $numStringsInParallel = ceil(($packEnergy*1000/$packVoltage)/($cellCapacity));
 
-            $packResistance = ($CellInternalResitance + $CellTabResistance / 1000) * $numCellsInSeries
-                        + $EEInternalResistance;
+            $packResistance = round( ($CellInternalResitance * 1000 + $CellTabResistance) / $numStringsInParallel * $numCellsInSeries
+                              + ($EEInternalResistance), 3);
 
             $revisedPackSize = $numStringsInParallel * $packVoltage  * $cellCapacity * 10 ** -3; // [kWh]
             $revisedPackCapacity = $revisedPackSize * 1000 / $packVoltage; // [Ah]
@@ -775,7 +666,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
                 <p class="card-text">Pack energy: @revised_pack_size kWh</p>
                 <p class="card-text">Pack S/P (series/parallel): @number_of_cells_in_series/@number_of_strings_in_parallel</p>
                 <p class="card-text">Number of cells in the pack: @total_number_of_cells</p>
-                <p class="card-text">Pack resistance: @packResitance Ohm</p>
+                <p class="card-text">Pack resistance: @packResitance mOhm</p>
                 <p class="card-text">Pack mass: @pack_mass kg</p>
                 <p class="card-text">Pack volume: @pack_volume L</p>
                 <p class="card-text">The current draw at a @c_rate C is @current A</p>

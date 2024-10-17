@@ -440,12 +440,15 @@ class batterycalcAjaxForm extends FormBase {
     ];
     $cell = $form_state->getValue('Cell_DB');
 
+    if ($cell == null) {
+        $cell = 87;
+    }
     if ($cell !=null) {
         $form['pack']['cell_wrapper']['Cell_Voltage_Nom'] = [
             '#type' => 'number',
             '#title' => $this->t('Nominal V [V]'),
             '#step' => 0.001,
-            '#min' => 0.1,
+            '#min' => 0.100,
             '#max' => 4,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['nom_v'],
             '#prefix' => '<div class="row align-items-start p-auto"><div class="col">'
@@ -662,15 +665,15 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
             <div class="card alert alert-primary">
             <h5 class="card-header alert alert-warning text-center mt-0 fs-4 fw-bold">Battery Pack Specification</h5>
                 <div class="card-body alert">
-                <p class="card-text">Pack capacity: @revised_pack_capacity Ah</p>
-                <p class="card-text">Pack energy: @revised_pack_size kWh</p>
-                <p class="card-text">Pack S/P (series/parallel): @number_of_cells_in_series/@number_of_strings_in_parallel</p>
-                <p class="card-text">Number of cells in the pack: @total_number_of_cells</p>
-                <p class="card-text">Pack resistance: @packResitance mOhm</p>
-                <p class="card-text">Pack mass: @pack_mass kg</p>
-                <p class="card-text">Pack volume: @pack_volume L</p>
-                <p class="card-text">The current draw at a @c_rate C is @current A</p>
-                <p class="card-text">The power delivered @c_rate C is @power kW</p>
+                <p class="card-text m-0">Pack capacity: @revised_pack_capacity Ah</p>
+                <p class="card-text m-0">Pack energy: @revised_pack_size kWh</p>
+                <p class="card-text m-0">Pack S/P (series/parallel): @number_of_cells_in_series/@number_of_strings_in_parallel</p>
+                <p class="card-text m-0">Number of cells in the pack: @total_number_of_cells</p>
+                <p class="card-text m-0">Pack resistance: @packResitance mOhm</p>
+                <p class="card-text m-0">Pack mass: @pack_mass kg</p>
+                <p class="card-text m-0">Pack volume: @pack_volume L</p>
+                <p class="card-text m-0">The current draw at a @c_rate C is @current A</p>
+                <p class="card-text m-0">The power delivered @c_rate C is @power kW</p>
                 </div>
             </div>
         </div>'
@@ -699,6 +702,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
     }
 
     $ajax_response->addCommand(new HtmlCommand('#packParameters', $text));
+
 
     return $ajax_response;
 }
@@ -968,7 +972,7 @@ protected function getCellSpec($cell, $dbname) {
 
     $cell_text = '';
     foreach ($cell_spec as $key => $value) {
-       $cell_text = $cell_text . '<p class="card-text">'. $key . ': ' . $value . '</p>';
+       $cell_text = $cell_text . '<p class="card-text m-0">'. $key . ': ' . $value . '</p>';
     }
 
     return $cell_text;

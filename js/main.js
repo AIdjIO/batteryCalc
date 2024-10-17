@@ -20,10 +20,10 @@ import * as batt from './batterycalc.js'
             // document.getElementById('edit-voltage-architecture')
             // .addEventListener('change', batt.updatePlotly); 
 
-            let cell_db = document.getElementById('edit-cell-db');
+            // let cell_db = document.getElementById('edit-cell-db');
             // cell_db.addEventListener('change', batt.updatePlotly);
-            let event = new Event('change');
-            cell_db.dispatchEvent(event);       
+            // let event = new Event('change');
+            // cell_db.dispatchEvent(event);       
             
             // let cell_wrapper = document.getElementById('cell-wrapper');
 

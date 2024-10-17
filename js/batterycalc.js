@@ -195,13 +195,21 @@ export function motorPwrActual(speeds, curr = 'peak'){
 }
 
 /**
+ * returns voltage architecture
+ * @returns {number} voltage architecture of vehicule in Volts
+ */
+export function voltageArchitecture(){
+    return document.getElementById('edit-voltage-architecture-0').checked? 400 : 800;
+}
+
+/**
  * Calculates SOC from current of continuous power from motor
  * @param {array} speeds 
  * @returns {array} soc
  */
 export function SOC(speeds, curr){
     let E = 1e3*document.getElementById("edit-pack-size").value;
-    let V = document.getElementById('edit-voltage-architecture-0').checked? 400 : 800;
+    let V = voltageArchitecture();
 
     let C = E/V;
 
@@ -228,11 +236,49 @@ export function currentActual(speeds, curr){
     }
    }
 
-    let R = 0.1; // pack resistance
+    // let R = 0.1; // pack resistance
+    let R = packResitance() / 1000;
 
     return actualPwr.map(p => (V - Math.sqrt(V * V - 4 * R * p * 1000)) / 2 / R )
 }
 
+/**
+ * Calculate Pack S/P config
+ * @param {number} packSize battery pack energy in kwh
+ * @returns {array} [S, P],  S = num cell in series, P = num cells in parallel
+ */
+export function packSP(packSize){
+    let nomV = document.querySelector('input[data-drupal-selector = "edit-cell-voltage-nom"]').value
+    let cellCapacity = document.querySelector('input[data-drupal-selector = "edit-cell-capacity"]').value
+    let packNominalVoltage = voltageArchitecture();
+
+    let numCellsSeries = Math.ceil( packNominalVoltage / nomV );
+    let numCellsParallel = Math.ceil( packSize * 1000 / packNominalVoltage
+                                / cellCapacity );
+
+    return [numCellsSeries, numCellsParallel];
+}
+
+/**
+ * Calculate Pack Resistance
+ * @returns {number} pack resistance in mOhm
+ */
+export function packResitance(){
+    let tabR = parseFloat(document
+        .querySelector('input[data-drupal-selector = "edit-cell-tab-resistance"]').value);
+    let internalR = parseFloat(document.querySelector('input[data-drupal-selector = "edit-cell-internal-resistance"]')
+    .value);
+
+    let EEInternR = parseFloat(
+        document.querySelector('input[data-drupal-selector = "edit-ee-internal-resistance"]')
+        .value);
+    let packSize = parseFloat(document.getElementById('edit-pack-size').value);
+ 
+    let [S, P] = [...packSP(packSize)];
+    
+    return ((tabR + internalR) * S) / P + EEInternR;
+
+}
 /**
  * Calculates energy consumption over the cycle
  * with regenerative braking
@@ -372,7 +418,7 @@ export function calculateBatteryPackSize(speeds){
  * @param {object} data - an array of arrays of plot data 
  */
 export function updatePlotly(){
-
+    console.log('Plotly update function running...')
     let data = {};
     [ data.labels, data.speeds ] = [ ...getData() ];
 

@@ -418,7 +418,7 @@ export function calculateBatteryPackSize(speeds){
  * @param {object} data - an array of arrays of plot data 
  */
 export function updatePlotly(){
-    console.log('Plotly update function running...')
+    
     let data = {};
     [ data.labels, data.speeds ] = [ ...getData() ];
 

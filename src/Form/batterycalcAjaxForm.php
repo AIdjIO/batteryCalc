@@ -673,7 +673,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
                 <p class="card-text m-0">Pack mass: @pack_mass kg</p>
                 <p class="card-text m-0">Pack volume: @pack_volume L</p>
                 <p class="card-text m-0">The current draw at a @c_rate C is @current A</p>
-                <p class="card-text m-0">The power delivered @c_rate C is @power kW</p>
+                <p class="card-text m-0">The power delivered at @c_rate C is @power kW</p>
                 </div>
             </div>
         </div>'

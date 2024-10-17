@@ -7,32 +7,13 @@ import * as batt from './batterycalc.js'
         attach: function attach(context, settings) {
 
             let inputs = [...document.querySelectorAll(
-                            'input[type=number], select, input[type=radio], textarea')];
+                            'input[type=number], select, radio, input[type=radio], textarea')];
 
             inputs.forEach(input => {
-                // range.setAttribute("onchange",
-                //             "this.parentElement.nextElementSibling.value = this.value");
 
-                // range.parentElement.nextElementSibling.value = range.value;
                 input.addEventListener('change', batt.updatePlotly);
                         });
-
-            // document.getElementById('edit-voltage-architecture')
-            // .addEventListener('change', batt.updatePlotly); 
-
-            // let cell_db = document.getElementById('edit-cell-db');
-            // cell_db.addEventListener('change', batt.updatePlotly);
-            // let event = new Event('change');
-            // cell_db.dispatchEvent(event);       
-            
-            // let cell_wrapper = document.getElementById('cell-wrapper');
-
-            // let cell_inputs = cell_wrapper.querySelectorAll('input[type=number]');
-
-            // for (let cells of cell_inputs){
-            //     cells.addEventListener('change', batt.updatePlotly);
-            // }
-            
+         
             $(document).on('shown.bs.tab', function (event) {
                 var doc = $(".tab-pane.active .js-plotly-plot");
                 for (var i = 0; i < doc.length; i++) {

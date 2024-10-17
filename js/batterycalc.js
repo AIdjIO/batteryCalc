@@ -155,7 +155,12 @@ export function total_cycle_power(speeds){
                                      + ancillaryLoadEnergyPerSecond );
 }
 
-export function totalMotorPower(_, curr){
+/**
+ * returns the vehicle motor power based on user powertrain selection and input
+ * @param {string} curr equal to 'peak' or 'cont'
+ * @returns {number} the total motor power available in the vehicle
+ */
+export function totalMotorPower( curr ){
     if (curr == 'peak') {    
         let fr_motor_pwr_pk = document.querySelectorAll("[data-drupal-selector='edit-front-motor-power-peak']")[0];
         let rr_motor_pwr_pk = document.querySelectorAll("[data-drupal-selector='edit-rear-motor-power-peak']")[0];
@@ -177,7 +182,7 @@ export function totalMotorPower(_, curr){
  */
 export function motorPwrActual(speeds, curr = 'peak'){
     let powerDmnd = total_cycle_power( speeds );
-    let motorPower = totalMotorPower( _, curr );
+    let motorPower = totalMotorPower( curr );
 
     //powertrain efficiency (conversion from electrical to mechanical)
     let eff = document.getElementById('edit-powertrain-efficiency').value;
@@ -307,7 +312,7 @@ export function plotPowerLimit(id, curr, data){
     if (traces.map(v=>v.name).indexOf('Max Power Lim ' + curr)>-1) return;
     if (traces.map(v=>v.name).indexOf('Min Power Lim ' + curr)>-1) return;
 
-    let motorPwr = totalMotorPower( _ ,  curr );
+    let motorPwr = totalMotorPower( curr );
     
     Plotly.addTraces(id, {
         name:'Max Power Lim '+ curr,
@@ -430,8 +435,8 @@ export function updatePlotly(){
         }
     }
     
-    let totalPeakMotorPower = totalMotorPower( _ , 'peak' );
-    let totalContMotorPower = totalMotorPower( _ , 'cont' );
+    let totalPeakMotorPower = totalMotorPower( 'peak' );
+    let totalContMotorPower = totalMotorPower( 'cont' );
 
     let layout = {
         layout_cycle_preview : {
@@ -1099,5 +1104,5 @@ export function updatePlotly(){
         containerLayout[key].forEach(trace=>{
             plotTrace(key, traceObj[trace], data);
         })
-    })
+    });
 }   

@@ -6,11 +6,12 @@ import * as batt from './batterycalc.js'
     Drupal.behaviors.plotlyjs = {
         attach: function attach(context, settings) {
 
+            batt.updatePlotly();
+            
             let inputs = [...document.querySelectorAll(
                             'input[type=number], select, radio, input[type=radio], textarea')];
 
             inputs.forEach(input => {
-
                 input.addEventListener('change', batt.updatePlotly);
                         });
          

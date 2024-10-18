@@ -108,7 +108,7 @@ class batterycalcAjaxForm extends FormBase {
     $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h
         '#type' => 'textarea',
         '#required' => TRUE,
-        '#default_value' =>  implode(',',CycleData::$cycleData['WLTC3b']['data']),
+        '#default_value' =>  implode(',',CycleData::$cycleData['What Car Drive Cycle']['data']),
         '#suffix' => '<div class="error" id = "vehicle_speed_error"></div>',
     ];
     $form['PlotlySpeedPreview'] =  [

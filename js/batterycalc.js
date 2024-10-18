@@ -72,7 +72,7 @@ export function calculateSpeedInfo(speeds){
  * @returns array
  */
 export function acceleration(speeds) {
-    return speeds.map( (v,i) => ( v - (speeds[i-1] || 0)) );
+    return speeds.map( (v,i) => ( v - (speeds[i-1] || speeds[i])) );
 }
 
 /**
@@ -90,11 +90,14 @@ export function total_forces(speeds) {
     let rho = document.getElementById('edit-air-density').value;
     let alpha = document.getElementById('edit-road-slope').value * Math.PI/180;
 
+    let forces = (speeds).map((v,i) =>( mass * ((v - (speeds[i-1] || speeds[i]) ) 
+    + GRAVITY * Crr * Math.cos(alpha)
+    + GRAVITY * Math.sin(alpha))
+    + 0.5 * rho * Cd * A * v * v ));  
 
-    return (speeds).map((v,i) =>( mass * ((v - (speeds[i-1] || 0) ) 
-                                        + GRAVITY * Crr * Math.cos(alpha)
-                                        + GRAVITY * Math.sin(alpha))
-                                        + 0.5 * rho * Cd * A * v * v ));    
+    console.log(forces);
+
+    return  forces;
 }
 
 /**
@@ -147,12 +150,12 @@ export function total_cycle_power(speeds){
     
     //get ancillary loads
     let ancillaryLoadEnergy = document.getElementById('edit-ancillary-energy').value
-    / 1000; //[kWh/km]
-    let ancillaryLoadEnergyPerSecond = ancillaryLoadEnergy 
-                  * distance / speeds.length //[kwh/s];
+                                / 1000; //[kWh/km]
+    let ancillaryLoadPower = ancillaryLoadEnergy
+                  * distance / (speeds.length / 3600) //[kw];
 
     return total_forces(speeds).map( (f, i) => f * speeds[i] / 1000
-                                     + ancillaryLoadEnergyPerSecond );
+                                     + ancillaryLoadPower );
 }
 
 /**
@@ -826,7 +829,7 @@ export function updatePlotly(){
     let traceObj = {
         'EnergyRegenOn':
         {
-            traceName: "Energy On",
+            traceName: "Energy Regen On",
             curr: "peak", // 'cont' or 'peak',
             dataCallback: cycle_energy, // function name to generate y axis data.
             xaxis: 'x',
@@ -847,7 +850,7 @@ export function updatePlotly(){
         },
         'EnergyRegenOff':
         {
-            traceName: "Energy Off",
+            traceName: "Energy Regen Off",
             curr: "peak", // 'cont' or 'peak',
             dataCallback: cycle_energy, // function name to generate y axis data.
             xaxis: 'x',

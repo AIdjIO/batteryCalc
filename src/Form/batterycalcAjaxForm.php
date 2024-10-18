@@ -90,7 +90,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Select predefined test cycle or select "Custom Cycle" to define your own'),
         '#description' => $this->t("note: predefined cycles are editable in 'Speed Profile' text box below"),
         '#options' => array_combine(array_keys(CycleData::$cycleData),$cycle_options),
-        '#default_value' => 'WLTC3b',
+        '#default_value' => 'What Car Drive Cycle',
         '#ajax' => [
             'callback' => '::selectCycle',
             'event' => 'change',
@@ -337,11 +337,11 @@ class batterycalcAjaxForm extends FormBase {
     ];
     $form['vehicle']['Vehicle_Container']['Rolling_Resistance'] = [
         '#type' => 'number',
-        '#step'=> 0.001,
+        '#step'=> 0.0001,
         '#min' => 0,
         '#max' => 1,
         '#title' => $this->t('Rolling Resistance [-]'),
-		'#default_value' => 0.012,
+		'#default_value' => 0.0120,
         '#prefix' => '<div class="col">',
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "rolling_resitance"></div>',
     ];
@@ -447,6 +447,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Voltage_Nom'] = [
             '#type' => 'number',
             '#title' => $this->t('Nominal V [V]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.001,
             '#min' => 0.100,
             '#max' => 4,
@@ -456,6 +457,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Voltage_Max'] = [
             '#type' => 'number',
             '#title' => $this->t('Max V [V]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['max_v'],
@@ -463,6 +465,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Voltage_Min'] = [
             '#type' => 'number',
             '#title' => $this->t('Cut Off V [V]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['cutoff_v'],
@@ -470,6 +473,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['C_rate'] = [
             '#type'=> 'number',
             '#title' =>$this->t('C-rate'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 1,
             '#min' => 1,
             '#max' => 100,
@@ -479,6 +483,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Width'] = [
             '#type' => 'number',
             '#title' => $this->t('Width [mm]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.0,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['width_mm'],
@@ -486,6 +491,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Height'] = [
             '#type' => 'number',
             '#title' => $this->t('Height [mm]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['height_mm'],
@@ -494,6 +500,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Depth'] = [
             '#type' => 'number',
             '#title' => $this->t('Depth or Dia [mm]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
@@ -503,6 +510,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Diameter'] = [
             '#type' => 'hidden',
             '#title' => $this->t('Diameter [mm]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
@@ -511,6 +519,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Capacity'] = [
             '#type' => 'number',
             '#title' => $this->t('Capacity [Ah]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['ah_rate'],
@@ -518,6 +527,7 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['Cell_Mass'] = [
             '#type' => 'number',
             '#title' => $this->t('Mass [g]'),
+            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 1,
             '#min' => 1,
             '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['mass_g'],

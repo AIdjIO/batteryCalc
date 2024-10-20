@@ -322,7 +322,7 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'number',
         '#step'=> 0.01,
         '#min' => 0.1,
-        '#max' => 10,
+        '#max' => 100,
         '#title' => $this->t('Frontal Area [m2]'),
 		'#default_value' => 2.5,
         '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "frontal_area"></div>',

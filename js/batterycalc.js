@@ -95,8 +95,6 @@ export function total_forces(speeds) {
     + GRAVITY * Math.sin(alpha))
     + 0.5 * rho * Cd * A * v * v ));  
 
-    console.log(forces);
-
     return  forces;
 }
 

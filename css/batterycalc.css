@@ -1,6 +1,7 @@
-/* #batterycalc-ajax {
-    background: #eadac1;
-} */
+body {
+    background-image: none !important;
+    background-color: #FFFFFF !important;
+}
 #block-olivero-content {
     grid-column: 1/14;
 }

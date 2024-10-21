@@ -14,6 +14,8 @@ import * as batt from './batterycalc.js'
             inputs.forEach(input => {
                 input.addEventListener('change', batt.updatePlotly);
                         });
+
+            let table = new DataTable('#cell_table');
          
             $(document).on('shown.bs.tab', function (event) {
                 var doc = $(".tab-pane.active .js-plotly-plot");

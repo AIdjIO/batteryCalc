@@ -580,6 +580,25 @@ class batterycalcAjaxForm extends FormBase {
             ]
         ]
     ];
+
+    $cell_DB = $this->getCellDB(CELL_DB_NAME);
+    $cell_table_keys = array_keys(array_merge(...$this->getCellDB(CELL_DB_NAME)));
+    $cell_table_values = [];
+    
+    foreach($cell_DB as $k0 => $v0){
+        $cell_table_values[$k0] = [];
+        foreach($cell_table_keys as $k1){
+            array_push($cell_table_values[$k0],$cell_DB[$k0][$k1]);
+        };
+    }
+    $form['Cell_Table'] = [
+        '#type' => 'tableselect',
+        '#header' => $cell_table_keys,
+        '#options' => $cell_table_values,
+        '#attributes' => ['id' => '#cell_table',
+                        'class' => ['datatable',]
+                        ],
+    ];
     $form['#attached']['library'][] = 'batterycalc/chart_library';
 
     $form['#theme'] = 'batterycalc_form';

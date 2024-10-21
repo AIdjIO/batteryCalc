@@ -23,5 +23,6 @@ chart_library:
     js/batterycalc.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
+    js/dataTable/dataTable.min.js: {minified: true,}
     js/jquery/jquery-ui.js: {}
 

@@ -90,7 +90,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Select predefined test cycle or select "Custom Cycle" to define your own'),
         '#description' => $this->t("note: predefined cycles are editable in 'Speed Profile' text box below"),
         '#options' => array_combine(array_keys(CycleData::$cycleData),$cycle_options),
-        '#default_value' => 'What Car Drive Cycle',
+        '#default_value' => 'WLTC3b',
         '#ajax' => [
             'callback' => '::selectCycle',
             'event' => 'change',
@@ -421,17 +421,20 @@ class batterycalcAjaxForm extends FormBase {
         ],
         '#default_value' => 1,
     ];
-    $form['pack']['Cell_DB'] = [
-        '#title' => 'Lithium ion cell database <a href="https://github.com/TUMFTM/TechnoEconomicCellSelection" target="_blank">(source)</a>',
-        '#type' => 'select',
-        '#options' => $this->getCellList(CELL_DB_NAME),
-        // '#empty_option' => $this->t('- Select a lithium ion cell -'),
-        '#default_value' => 87,
-        '#ajax' => [
-            'callback' => '::updateCell',
-            'wrapper' => 'cell-wrapper',
-        ],
-    ];
+
+    $cell_DB = $this->getCellDB(CELL_DB_NAME);
+    
+    // $form['pack']['Cell_DB'] = [
+    //     '#title' => 'Lithium ion cell database <a href="https://github.com/TUMFTM/TechnoEconomicCellSelection" target="_blank">(source)</a>',
+    //     '#type' => 'select',
+    //     '#options' => $this->getCellList($cell_DB),
+    //     // '#empty_option' => $this->t('- Select a lithium ion cell -'),
+    //     '#default_value' => 87,
+    //     '#ajax' => [
+    //         'callback' => '::updateCell',
+    //         'wrapper' => 'cell-wrapper',
+    //     ],
+    // ];
     $form['pack']['cell_wrapper'] = [
         '#type' => 'container',
         '#attributes' => [
@@ -443,6 +446,7 @@ class batterycalcAjaxForm extends FormBase {
     if ($cell == null) {
         $cell = 87;
     }
+
     if ($cell !=null) {
         $form['pack']['cell_wrapper']['Cell_Voltage_Nom'] = [
             '#type' => 'number',
@@ -451,7 +455,7 @@ class batterycalcAjaxForm extends FormBase {
             '#step' => 0.001,
             '#min' => 0.100,
             '#max' => 4,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['nom_v'],
+            '#value' => (float) $cell_DB[$cell]['nom_v'],
             '#prefix' => '<div class="row align-items-start p-auto"><div class="col">'
         ];
         $form['pack']['cell_wrapper']['Cell_Voltage_Max'] = [
@@ -460,7 +464,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['max_v'],
+            '#value' => (float) $cell_DB[$cell]['max_v'],
         ];
         $form['pack']['cell_wrapper']['Cell_Voltage_Min'] = [
             '#type' => 'number',
@@ -468,7 +472,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['cutoff_v'],
+            '#value' => (float) $cell_DB[$cell]['cutoff_v'],
         ];
         $form['pack']['cell_wrapper']['C_rate'] = [
             '#type'=> 'number',
@@ -486,7 +490,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.0,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['width_mm'],
+            '#value' => (float) $cell_DB[$cell]['width_mm'],
         ];
         $form['pack']['cell_wrapper']['Height'] = [
             '#type' => 'number',
@@ -494,7 +498,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['height_mm'],
+            '#value' => (float) $cell_DB[$cell]['height_mm'],
             '#suffix' => '</div>'
         ];
         $form['pack']['cell_wrapper']['Depth'] = [
@@ -503,8 +507,8 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
-            (float) $this->getCell($cell, CELL_DB_NAME)['dia_mm'] : (float) $this->getCell($cell, CELL_DB_NAME)['depth_mm'],
+            '#value' => $cell_DB[$cell]['depth_mm'] == "not applicable" ?
+            (float) $cell_DB[$cell]['dia_mm'] : (float) $cell_DB[$cell]['depth_mm'],
             '#prefix' => '<div class="col">',
         ];
         $form['pack']['cell_wrapper']['Diameter'] = [
@@ -513,8 +517,8 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => $this->getCell($cell, CELL_DB_NAME)['depth_mm'] == "not applicable" ?
-            (float) $this->getCell($cell, CELL_DB_NAME)['dia_mm'] : (float) $this->getCell($cell, CELL_DB_NAME)['depth_mm'], //mm
+            '#value' => $cell_DB[$cell]['depth_mm'] == "not applicable" ?
+            (float) $cell_DB[$cell]['dia_mm'] : (float) $cell_DB[$cell]['depth_mm'], //mm
         ];
         $form['pack']['cell_wrapper']['Cell_Capacity'] = [
             '#type' => 'number',
@@ -522,7 +526,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 0.1,
             '#min' => 0.1,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['ah_rate'],
+            '#value' => (float) $cell_DB[$cell]['ah_rate'],
         ];
         $form['pack']['cell_wrapper']['Cell_Mass'] = [
             '#type' => 'number',
@@ -530,7 +534,7 @@ class batterycalcAjaxForm extends FormBase {
             '#attributes' => ['disabled' => 'disabled'],
             '#step' => 1,
             '#min' => 1,
-            '#value' => (float) $this->getCell($cell, CELL_DB_NAME)['mass_g'],
+            '#value' => (float) $cell_DB[$cell]['mass_g'],
         ];
         $form['pack']['cell_wrapper']['Cell_Tab_Resistance'] = [ //[mOhm]
             '#type' => 'number',
@@ -582,22 +586,47 @@ class batterycalcAjaxForm extends FormBase {
     ];
 
     $cell_DB = $this->getCellDB(CELL_DB_NAME);
-    $cell_table_keys = array_keys(array_merge(...$this->getCellDB(CELL_DB_NAME)));
+    $cell_table_keys = array_slice(array_keys(array_merge(...$cell_DB)),1);
     $cell_table_values = [];
     
     foreach($cell_DB as $k0 => $v0){
         $cell_table_values[$k0] = [];
         foreach($cell_table_keys as $k1){
-            array_push($cell_table_values[$k0],$cell_DB[$k0][$k1]);
+            if ($k1 != 'id'){
+                array_push($cell_table_values[$k0],$cell_DB[$k0][$k1]);
+            }
         };
     }
     $form['Cell_Table'] = [
+        '#title' => 'Lithium ion cell database <a href="https://github.com/TUMFTM/TechnoEconomicCellSelection" target="_blank">(source)</a>',
         '#type' => 'tableselect',
         '#header' => $cell_table_keys,
         '#options' => $cell_table_values,
-        '#attributes' => ['id' => '#cell_table',
-                        'class' => ['datatable',]
+        '#empty' => $this->t('No content available.'),
+        '#multiple' => FALSE,
+        '#js_select' => FALSE,
+        '#attributes' => ['id' => 'cell_table',
+                        'class' => ['table', 'table-striped', 'table-hover', 'dt-responsive', 'display']
                         ],
+        '#prefix' => Markup::create(
+            '<div class="accordion" id="accordionTableselect">
+                <div class="accordion-item">
+                <h2 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
+                    <button id="btnAccordion" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="true" aria-controls="accordionTableSelectBody">
+                        Collapse cell selection
+                    </button>
+                </h2>
+                <div id="accordionTableselectBody" class="accordion-collapse collapse show" data-bs-parent="#accordionTableselect">
+                    <div class="accordion-body bg-secondary-subtle">
+                        <div class="dtsp-verticalContainer">
+                            <div class="dtsp-verticalPanes"></div>
+                                <div class="container table-responsive">'),
+        '#suffix' =>'</div>
+                        </div>
+                            </div>
+                                </div>
+                                    </div>
+                                        </div>',
     ];
     $form['#attached']['library'][] = 'batterycalc/chart_library';
 
@@ -626,6 +655,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
     //get values
     $formField = $form_state->getValues();
     
+    $cell_DB = $this->getCellDB(CELL_DB_NAME);
     $cell = $form_state->getValue('Cell_DB');
     
     if ($cell != null){
@@ -687,7 +717,7 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
             $text = $this->t('<div class="card-group">
             <div class="card alert alert-primary">
             <h5 class="card-header alert alert-warning text-center mt-0 fs-4 fw-bold">Cell Specification</h5>
-                <div class="card-body">'.$this->getCellSpec($cell, CELL_DB_NAME).'
+                <div class="card-body">'.$this->getCellSpec($cell_DB, $cell).'
 
                 </div>
             </div>
@@ -972,14 +1002,14 @@ protected function getCellOption($cell_index,$dbname){
  * @return array
  *   An associative array of formatted cells data.
  */
-protected function getCellList($dbname){
+protected function getCellList($cell_DB){
     return array_map(function($v){return $v['ffactor'] . ' ' .  $v['prt_num'] . ' ' . $v['brand'] . ' ' 
                                                 . $v['chemistry'] . ' '
                                                 . $v['ah_rate'] . 'Ah nom '
                                                 . $v['nom_v'] . 'V max ' . $v['max_v'] . 'V min '
                                                 . $v['cutoff_v'] .'V';
                                             }, 
-                                                $this->getCellDB($dbname)
+                                                $cell_DB
                                             );
                                         }
 /**
@@ -996,8 +1026,8 @@ protected function getCell($cell_index, $dbname) {
     return $this->getCellDB($dbname)[$cell_index];
 }
 
-protected function getCellSpec($cell, $dbname) {
-    $cell_spec = $this->getCell($cell, CELL_DB_NAME);
+protected function getCellSpec($cell_DB, $cell) {
+    $cell_spec = $cell_DB[$cell];
 
     $cell_text = '';
     foreach ($cell_spec as $key => $value) {

@@ -233,15 +233,7 @@ export function SOC(speeds, curr){
  */
 export function currentActual(speeds, curr){
     let actualPwr = motorPwrActual(speeds, curr);
-    let voltage_architecture = document.querySelectorAll('input[type="radio"]:checked');
-    let V;
-
-   for (let radio of voltage_architecture){
-    if (radio.checked){
-        V = radio.value == "0" ? 400: 800;
-    }
-   }
-
+    let V = voltageArchitecture();
     // let R = 0.1; // pack resistance
     let R = packResitance() / 1000;
 
@@ -424,6 +416,8 @@ export function calculateBatteryPackSize(speeds){
  * @param {object} data - an array of arrays of plot data 
  */
 export function updatePlotly(){
+
+    console.log('Updating...');
     
     let data = {};
     [ data.labels, data.speeds ] = [ ...getData() ];

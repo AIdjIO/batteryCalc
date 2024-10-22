@@ -1588,7 +1588,7 @@
         "grp": "ISI-048",
         "brand": "BAK",
         "chemistry_detail": "Nickel rich",
-        "chemistry": "NMC811",
+        "chemistry": "NMC 811",
         "ffactor": "Cylindrical",
         "prt_num": "N21700CB-48",
         "cell_status": "Active",

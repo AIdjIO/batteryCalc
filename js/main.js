@@ -18,8 +18,15 @@ import * as batt from './batterycalc.js'
             });
             
             let table = new DataTable('#cell_table', {
-                responsive: true,
+                // responsive: true,
                 fixedHeader: true,
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: true,
+                pageLength: 30,
                 columnDefs: [{
                     "defaultContent": "-",
                     "targets": "_all"
@@ -63,42 +70,57 @@ import * as batt from './batterycalc.js'
                         ]
                     },
                 },
-
-                pageLength: 35,
             });
 
             // let rows = table.rows().data();
             let headerName = table.columns().header().map(d => d.textContent).toArray();
             headerName.shift();
 
+            let cellDBKeys = {
+                "edit-cell-voltage-nom":"nom_v",
+                "edit-cell-voltage-max":"max_v",
+                "edit-cell-voltage-min":"cutoff_v",
+                "edit-width":"width_mm",
+                "edit-height":"height_mm",
+                "edit-depth":"depth_mm",
+                "edit-diameter":"dia_mm",
+                "edit-cell-capacity":"ah_rate",
+                "edit-cell-mass":"mass_g",
+            };
+
             table.rows().nodes()
                 .to$().find( 'input[type=radio][data-drupal-selector*="edit-cell-table-"]')
                 .each(function( i, element ) {
+                    
                     let rowData = table.row(element.parentNode.parentNode).data();
                     rowData.shift();
 
-                    element.addEventListener('click',()=>{
+                    //initialised cell values with values of first row in cell selection
+                    if (i==0) {
+                        Object.keys(cellDBKeys).forEach(k => {
+                            let dataObj 
+                            = Object.fromEntries(headerName.map((k,j) => [k, rowData[j]] ));
                             
-                    let dataObj = Object.fromEntries(headerName.map((k,j) => [k, rowData[j]] ));
-    
-                    let cellDBKeys = {
-                        "edit-cell-voltage-nom":"nom_v",
-                        "edit-cell-voltage-max":"max_v",
-                        "edit-cell-voltage-min":"cutoff_v",
-                        "edit-width":"width_mm",
-                        "edit-height":"height_mm",
-                        "edit-depth":"depth_mm",
-                        "edit-diameter":"dia_mm",
-                        "edit-cell-capacity":"ah_rate",
-                        "edit-cell-mass":"masss_g",
-                    };
-    
-                    (Object.keys(cellDBKeys)).forEach(k=>{
-                        document.querySelector('input[data-drupal-selector='+k+']').value 
-                        = dataObj[cellDBKeys[k]];  
-                    });
+                            document.querySelector('input[data-drupal-selector='+k+']').value
+                            = dataObj[cellDBKeys[k]]; 
+                        })
+                    }
+
+                    element.addEventListener('click',()=>{                            
+                        let dataObj = Object.fromEntries(headerName.map((k,j) => [k, rowData[j]] ));
+        
+                        (Object.keys(cellDBKeys)).forEach(k=>{
+                            
+                            // if (dataObj['ffactor'] === 'Cylindrical' && cellDBKeys[k] === 'depth_mm'){
+                            //     document.querySelector('input[data-drupal-selector='+k+']').value 
+                            //     = dataObj['dia_mm'];
+                            // } else {
+                                document.querySelector('input[data-drupal-selector='+k+']').value 
+                                = dataObj[cellDBKeys[k]]; 
+                            // }
+                        });
+                    })
                 })
-            })
 
             document
                 .querySelector('div.dtsp-verticalPanes')

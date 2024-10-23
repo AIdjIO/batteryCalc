@@ -1,10 +1,8 @@
 global-styling:
   version: 1.0
-  css:
-    theme:
-      css/styles.css: {}
-  js:
-    js/custom.js: {}
+  # css:
+  #   theme:
+  # js:
   dependencies:
     - core/jquery
 
@@ -26,4 +24,4 @@ chart_library:
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
     js/dataTables/datatables.min.js: {}
-    js/jquery/jquery-ui.js: {}
+    # js/jquery/jquery-ui.js: {}

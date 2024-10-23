@@ -235,23 +235,23 @@ export function currentActual(speeds, curr){
     let actualPwr = motorPwrActual(speeds, curr);
     let V = voltageArchitecture();
     // let R = 0.1; // pack resistance
-    let R = packResitance() / 1000;
+    let R = packResistance(packSP()) / 1000;
 
     return actualPwr.map(p => (V - Math.sqrt(V * V - 4 * R * p * 1000)) / 2 / R )
 }
 
 /**
  * Calculate Pack S/P config
- * @param {number} packSize battery pack energy in kwh
  * @returns {array} [S, P],  S = num cell in series, P = num cells in parallel
  */
-export function packSP(packSize){
+export function packSP(){
+    let packSize = document.getElementById('edit-pack-size').value * 1000; //[Wh]
     let nomV = document.querySelector('input[data-drupal-selector = "edit-cell-voltage-nom"]').value
     let cellCapacity = document.querySelector('input[data-drupal-selector = "edit-cell-capacity"]').value
     let packNominalVoltage = voltageArchitecture();
 
     let numCellsSeries = Math.ceil( packNominalVoltage / nomV );
-    let numCellsParallel = Math.ceil( packSize * 1000 / packNominalVoltage
+    let numCellsParallel = Math.ceil( packSize / packNominalVoltage
                                 / cellCapacity );
 
     return [numCellsSeries, numCellsParallel];
@@ -261,7 +261,7 @@ export function packSP(packSize){
  * Calculate Pack Resistance
  * @returns {number} pack resistance in mOhm
  */
-export function packResitance(){
+export function packResistance(SP){
     let tabR = parseFloat(document
         .querySelector('input[data-drupal-selector = "edit-cell-tab-resistance"]').value);
     let internalR = parseFloat(document.querySelector('input[data-drupal-selector = "edit-cell-internal-resistance"]')
@@ -270,13 +270,13 @@ export function packResitance(){
     let EEInternR = parseFloat(
         document.querySelector('input[data-drupal-selector = "edit-ee-internal-resistance"]')
         .value);
-    let packSize = parseFloat(document.getElementById('edit-pack-size').value);
  
-    let [S, P] = [...packSP(packSize)];
+    let [S, P] = [...SP];
     
     return ((tabR + internalR) * S) / P + EEInternR;
 
 }
+
 /**
  * Calculates energy consumption over the cycle
  * with regenerative braking
@@ -382,7 +382,97 @@ export function plotTrace(containerId, traceObject, data){
 }
 
 /**
+ * get cell dimensions 
+ * @returns {array} [height, width, depth, dia] [mm]
+ */
+export function getCellDimensions(){
+    let height = +document.getElementById('edit-height').value || 0;
+    let width = +document.getElementById('edit-width').value || 0;
+    let depth = +document.getElementById('edit-depth').value || 0;
+    let dia = +document.querySelector('input[type="hidden"][data-drupal-selector="edit-diameter"]').value || 0; //value for dai is also stored in "edit-depth"
+    
+    return [height, width, depth, dia];
+}
+
+/**
+ * get cell mass
+ * @returns {number} cell mass [g]
+ */
+export function getCellMass(){
+    return +document.getElementById('edit-cell-mass').value;
+}
+
+/**
+ * Calculate pack mass "dry"
+ * @param {array} [number of cells in series, number of cells in parallel] 
+ * @returns {interger} mass [kg]
+ * 
+ */
+export function packMass(SP){
+    let [S,P] = [...SP];
+    return Math.round(S * P * getCellMass() * 1e-3);
+}
+
+/**
+ * Calculate pack volume (cell only)
+ * @param {array} [number of cells in series, number of cells in parallel]
+ * @returns {integer} volume [L]
+ */
+export function packVolume(SP){
+    let [S,P] = [...SP];
+    let [height, width, depth, dia] = [...getCellDimensions()];
+
+    console.log(height, width, depth, dia);
+
+     let volume = (width !== 0)
+        ? width * height * depth
+        : Math.PI * dia * dia * height / 4;
+
+        volume = Math.round(S * P * volume * 1e-6);
+
+        console.log(volume);
+    return volume;
+}
+
+/** 
+ * Calculate battery pack specification
+ * 
+ */
+export function calculateBatteryPackSpec(SP){
+    
+    let [S, P] = [...SP];
+
+    let cellNomV = document.getElementById('edit-cell-voltage-nom').value;
+    let cellCapacity = document.getElementById('edit-cell-capacity').value;
+    let cRate = document.getElementById('edit-c-rate').value;
+
+    let revisedPackCapacity = Math.ceil(P * cellCapacity); //[Ah]
+    let revisedPackEnergy = Math.ceil(S * cellNomV * revisedPackCapacity / 1000); //[kWh]
+
+    let resultsContainer = document.getElementById('packParameters');
+
+    resultsContainer
+    .innerHTML = `<div class="card-group">
+            <div class="card alert alert-primary">
+            <h5 class="card-header alert alert-warning text-center mt-0 fs-4 fw-bold">Battery Pack Specification</h5>
+                <div class="card-body alert">
+                <p class="card-text m-0">Pack capacity: ${revisedPackCapacity} Ah</p>
+                <p class="card-text m-0">Pack energy: ${revisedPackEnergy} kWh</p>
+                <p class="card-text m-0">Pack S/P (series/parallel): ${S}/${P}</p>
+                <p class="card-text m-0">Number of cells in the pack: ${S*P}</p>
+                <p class="card-text m-0">Pack resistance: ${packResistance(SP)} mOhm</p>
+                <p class="card-text m-0">Pack mass: ${packMass(SP)} kg (cells only)</p>
+                <p class="card-text m-0">Pack volume: ${packVolume(SP)} L (cells only)</p>
+                <p class="card-text m-0">The current draw at ${cRate} C is ${cRate * revisedPackCapacity} A</p>
+                <p class="card-text m-0">The power delivered at ${cRate} C is ${cRate * revisedPackEnergy} kW</p>
+                </div>
+            </div>
+        </div>`
+}
+
+/**
  * calculate battery pack size in kWh
+ * @param {array} speeds
  */
 export function calculateBatteryPackSize(speeds){
 
@@ -735,6 +825,7 @@ export function updatePlotly(){
 
     calculateSpeedInfo(data.speeds);
     calculateBatteryPackSize(data.speeds);
+    calculateBatteryPackSpec( packSP(), );
 
     const speed1 = {
         x: data.labels,

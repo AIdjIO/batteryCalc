@@ -108,7 +108,7 @@ class batterycalcAjaxForm extends FormBase {
     $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h
         '#type' => 'textarea',
         '#required' => TRUE,
-        '#default_value' =>  implode(',',CycleData::$cycleData['What Car Drive Cycle']['data']),
+        '#default_value' =>  implode(',',CycleData::$cycleData['WLTC3b']['data']),
         '#suffix' => '<div class="error" id = "vehicle_speed_error"></div>',
     ];
     $form['PlotlySpeedPreview'] =  [
@@ -477,7 +477,6 @@ class batterycalcAjaxForm extends FormBase {
         $form['pack']['cell_wrapper']['C_rate'] = [
             '#type'=> 'number',
             '#title' =>$this->t('C-rate'),
-            '#attributes' => ['disabled' => 'disabled'],
             '#step' => 1,
             '#min' => 1,
             '#max' => 100,
@@ -613,7 +612,7 @@ class batterycalcAjaxForm extends FormBase {
                 <div class="accordion-item">
                 <h2 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
                     <button id="btnAccordion" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="true" aria-controls="accordionTableSelectBody">
-                        Collapse cell selection
+                        Collapse/Extend cell selection
                     </button>
                 </h2>
                 <div id="accordionTableselectBody" class="accordion-collapse collapse show" data-bs-parent="#accordionTableselect">

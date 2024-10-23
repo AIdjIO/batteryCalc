@@ -13,7 +13,7 @@ chart_library:
       css/batterycalc.min.css: {}
       css/bootstrap/bootstrap.min.css: { minified: true, attributes: {} }
       css/bootstrap/bootstrap-icons.min.css: { minified: true, attributes: {} }
-      css/dataTables/datatables.min.css: {minified: true, attributes: {} }
+      css/dataTables/datatables.min.css: { minified: true, attributes: {} }
   js:
     js/main.min.js: {attributes: {'type': 'module'}}
     # js/chartjs/chart.min.js: { minified: true, attributes: {} }
@@ -22,6 +22,5 @@ chart_library:
     js/batterycalc.min.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
-    js/batterycalc.min.js: {}
     js/dataTables/datatables.min.js: {}
     # js/jquery/jquery-ui.js: {}

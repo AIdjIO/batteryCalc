@@ -60,3 +60,13 @@
 /drush
 /drupal.phar
 /drupal
+/js/main.js
+/js/batterycalc.js
+/js/lineChart.js
+/js/main.js
+**/chartjs
+**/hammerjs
+/js/dataTables/datatables.js
+/css/batterycalc.css
+/css/dataTables/datatables.css
+

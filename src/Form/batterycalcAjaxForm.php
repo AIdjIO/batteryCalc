@@ -15,7 +15,7 @@ use Drupal\Core\Database\Database;
 use Drupal\batterycalc\Form\CycleData;
 
 define("GRAVITY", 9.81);
-define("CELL_DB_NAME", 'cell_db2.json');
+define("CELL_DB_NAME", 'cell_db2.min.json');
 define("WHEEL_DB_NAME", 'tyre_size.txt');
 
 /**

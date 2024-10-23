@@ -18,7 +18,7 @@ import * as batt from './batterycalc.js'
             });
             
             let table = new DataTable('#cell_table', {
-                // responsive: true,
+                responsive: true,
                 fixedHeader: true,
                 paging: true,
                 lengthChange: true,
@@ -26,7 +26,6 @@ import * as batt from './batterycalc.js'
                 ordering: true,
                 info: true,
                 autoWidth: true,
-                pageLength: 30,
                 columnDefs: [{
                     "defaultContent": "-",
                     "targets": "_all"
@@ -41,12 +40,13 @@ import * as batt from './batterycalc.js'
                     headerCheckbox: false
                 },
                 layout: {
-                    top1: {
+                    bottom: {
                         searchPanes: {
                             initCollapsed: true,
                             viewTotal: true,
-                            layout: 'columns-1',
-                        }
+                            layout: 'columns-4',
+                            columns: [2,3,4,5],
+                        },
                     },
                     topStart: {
                         buttons: [

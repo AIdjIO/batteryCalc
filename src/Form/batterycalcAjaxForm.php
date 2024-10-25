@@ -381,7 +381,7 @@ class batterycalcAjaxForm extends FormBase {
 	];
     $form['Results'] = [
         '#type' => 'container',
-        '#markup' => '<div id="results" class="alert alert-primary">Battery Pack Size [kwh] here...</div>'
+        '#markup' => '<div id="results" class="card bg-primary-subtle">Battery Pack Size [kwh] here...</div>'
       ];
 
     $form['CalculatePackSize'] = [
@@ -565,7 +565,7 @@ class batterycalcAjaxForm extends FormBase {
         ];
     $form['PackParameters'] = [
         '#type' => 'container',
-        '#markup' => '<div id="packParameters" class="alert alert-primary">Battery Pack Specifications here...</div>'
+        '#markup' => '<div id="packParameters" class="card bg-primary-subtle">Battery Pack Specifications here...</div>'
         ];
     $form['CalculatePackParameters'] = [
         '#type' =>'button',
@@ -595,15 +595,16 @@ class batterycalcAjaxForm extends FormBase {
         };
     }
     $form['Cell_Table'] = [
-        '#title' => 'Lithium ion cell database <a href="https://github.com/TUMFTM/TechnoEconomicCellSelection" target="_blank">(source)</a>',
         '#type' => 'tableselect',
+        '#caption' => $this->t('Lithium ion cell database <a href="https://github.com/TUMFTM/TechnoEconomicCellSelection" target="_blank">(source)</a>'),
         '#header' => $cell_table_keys,
         '#options' => $cell_table_values,
         '#empty' => $this->t('No content available.'),
         '#multiple' => FALSE,
         '#js_select' => FALSE,
         '#attributes' => ['id' => 'cell_table',
-                        'class' => ['table', 'table-striped', 'table-hover', 'dt-responsive', 'display']
+                        'class' => ['table', 'table-striped', 'table-hover', 'display', 'nowrap'],
+                        'style' => 'width:100%;'
                         ],
         '#prefix' => Markup::create(
             '<div class="accordion" id="accordionTableselect">

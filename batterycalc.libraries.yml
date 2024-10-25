@@ -16,11 +16,7 @@ chart_library:
       css/dataTables/datatables.min.css: { minified: true, attributes: {} }
   js:
     js/main.min.js: {attributes: {'type': 'module'}}
-    # js/chartjs/chart.min.js: { minified: true, attributes: {} }
-    # js/hammerjs/hammer.min.js: { minified: true, attributes: {} }
-    # js/chartjs/chartjs-plugin-zoom.min.js: {minified: true, attributes: {'charset': "utf-8"}}
     js/batterycalc.min.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
     js/dataTables/datatables.min.js: {}
-    # js/jquery/jquery-ui.js: {}

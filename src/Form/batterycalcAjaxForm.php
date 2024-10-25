@@ -603,7 +603,7 @@ class batterycalcAjaxForm extends FormBase {
         '#multiple' => FALSE,
         '#js_select' => FALSE,
         '#attributes' => ['id' => 'cell_table',
-                        'class' => ['table', 'table-striped', 'table-hover', 'display', 'nowrap'],
+                        'class' => ['table', 'table-striped', 'table-hover', 'compact', 'display', 'nowrap'],
                         'style' => 'width:100%;'
                         ],
         '#prefix' => Markup::create(

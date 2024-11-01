@@ -80,13 +80,28 @@ async function makepdf(){
 		document.getElementById("speedPlotPackSize"),
 		document.getElementById("speedPlotPackSpec"),
 	];
+
+	//cell data from selected table row
+	let cellData = [
+		[...[...cellTable.querySelectorAll('th')].filter((x,idx)=>idx!=0).map(x=>x.innerText.toUpperCase())],
+		[...[...cellTable.querySelectorAll('input[type=radio]:checked')[0].closest("tr").querySelectorAll('td')].filter((x,idx)=>idx!=0).map(el=>el.innerHTML)] //get values from selected tr
+	];
+	// transpose cellData table to fit into the document
+	let [cellDataColumn] = cellData;
+	let cellDataRow = cellDataColumn.map((value, column) => cellData.map(row => row[column]));
 	
+	let qrContent = `${title}\nTest Cycle: ${assumptions.testCycle.options[assumptions.testCycle.options.selectedIndex].text}\n
+					Average road slope  + ${environment.roadSlope.value}° and air density of ${environment.airDensity.value}kg/m3\n
+					Required ${requirements.range.previousElementSibling.innerHTML}: ${requirements.range.value}\n
+					Battery Pack Spec: ${results.packResults.innerText.replace(/\s(Battery Pack Specification)\s/, '')}\n
+					Selected Cell: ${(JSON.stringify(cellDataRow)).replace(/[\"\[\]]+/gm,'').replace}`;
+
 	let content = [];
 
 	content.push(
-		{ text: title, style: 'coverTitle', absolutePosition: { x: 20, y: 250 } },
-		{ text: 'Preliminary Battery Sizing Calculations Report for Vehicle Application', style: 'coverSubTitle', absolutePosition: { x: 20, y: 375 }, },
-		{ qr: title, foreground: 'black', background: 'white', fit:'150',absolutePosition: {x:235,y:600}, pageBreak: 'after'}
+		{ text: title, style: 'coverTitle', absolutePosition: { x: 20, y: 150 } },
+		{ text: 'Preliminary Battery Sizing Calculations Report for Vehicle Application', style: 'coverSubTitle', absolutePosition: { x: 20, y: 275 }, },
+		{ qr: qrContent, foreground: 'black', background: 'white', fit:'350',absolutePosition: {x:140,y:500}, pageBreak: 'after'}
 	);
 	content.push({
 		toc: {
@@ -207,13 +222,6 @@ async function makepdf(){
 		{ text: '\n' },
 	);
 
-	let cellData = [
-		[...[...cellTable.querySelectorAll('th')].filter((x,idx)=>idx!=0).map(x=>x.innerText.toUpperCase())],
-		[...[...cellTable.querySelectorAll('input[type=radio]:checked')[0].closest("tr").querySelectorAll('td')].filter((x,idx)=>idx!=0).map(el=>el.innerHTML)] //get values from selected tr
-	];
-	let [cellDataColumn] = cellData;
-	let cellDataRow = cellDataColumn.map((value, column) => cellData.map(row => row[column]));
-
 	content.push(
 		{
 		text: 'Selected Cell Specification',
@@ -236,7 +244,7 @@ async function makepdf(){
 		},
 		background: function(currentPage, pageSize) {
 			return currentPage == 1 ? 
-			{ image: b64images.batteryPack, pageBreak: 'after', width: 500,	absolutePosition: { x: 50, y: 297 }, opacity: 0.5}:
+			{ image: b64images.batteryPack, pageBreak: 'after', width: 500,	absolutePosition: { x: 50, y: 197 }, opacity: 0.5}:
 			{}
 		  },
 		pageSize : 'A4',
@@ -248,7 +256,7 @@ async function makepdf(){
 					{columns : [
 					{ image: b64images.logo, width: 150, absolutePosition: {x:1, y:1} },
 					{ text: 'Calculator: ' + version, absolutePosition: {x:250, y:1} },
-					{ qr: title, foreground: 'black', background: 'white', fit:'75',absolutePosition: {x:531,y:1}},
+					{ qr: qrContent, foreground: 'black', background: 'white', fit:'75',absolutePosition: {x:531,y:1}},
 					],}
 			]}
 		},

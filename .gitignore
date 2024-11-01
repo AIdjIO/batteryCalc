@@ -72,7 +72,7 @@
 /templates/battemo*
 fslightbox.js
 /js/plotly.js
-/js/makepdf.js
+/js/pdfmake/makepdf.js
 /assets/batemo.json
 /templates/batemo_table.html
 /assets/images/*

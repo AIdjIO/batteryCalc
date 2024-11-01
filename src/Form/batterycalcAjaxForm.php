@@ -137,7 +137,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Differential gear ratio'),
         '#default_value' => 2.57,
         '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drive_differential_ratio"></div>',
+        '#suffix' => '<div class="error" id = "drive_differential_ratio"></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Ratio_Gear'] = [
         '#type' => 'number',
@@ -146,7 +146,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 5,
         '#title' => $this->t('Drive gear ratio'),
         '#default_value' => 1,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drive_ratio_gear"></div>',
+        '#suffix' => '<div class="error" id = "drive_ratio_gear"></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Ancillary_Energy'] = [
         '#type' => 'number',
@@ -155,7 +155,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 5000,
         '#title' => $this->t('Ancillaries [wh/km]'),
         '#default_value'=> 10,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "ancillary_consumption"></div></div>',
+        '#suffix' => '<div class="error" id = "ancillary_consumption"></div></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Powertrain_Efficiency'] = [
         '#type' => 'number',
@@ -165,7 +165,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Powertrain Efficiency [-]'),
         '#default_value'=> 0.9,
         '#prefix' => '<div class="col">',
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "powertrain_efficiency"></div>',
+        '#suffix' => '<div class="error" id = "powertrain_efficiency"></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Regen_Capacity'] = [
         '#type' => 'number',
@@ -174,7 +174,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 100,
         '#default_value' => 50,
         '#title' => $this->t('Regen. Braking %'),
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="regen_braking"></div>',
+        '#suffix' => '<div class="error" id="regen_braking"></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Useable_Capacity'] = [
         '#type' => 'number',
@@ -183,7 +183,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 100,
         '#default_value' => 95,
         '#title' => $this->t('Useable Capacity %'),
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="useable_capacity"></div></div>',
+        '#suffix' => '<div class="error" id="useable_capacity"></div></div>',
     ];
     $form['powertrain']['Powertrain_Container']['Drive_Type'] = [
         '#type' => 'radios',
@@ -294,7 +294,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 2,
         '#title' => $this->t('Air Density [kg/m3]'),
 		'#default_value' =>1.2041,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "air_density"></div>',
+        '#suffix' => '<div class="error" id = "air_density"></div>',
     ];
     $form['environment']['Environment_Container']['Road_Slope'] = [
         '#type' => 'number',
@@ -303,7 +303,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 45,
         '#title' => $this->t('Road Slope [°]'),
 		'#default_value' => 0.0,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "road_slope"></div>',
+        '#suffix' => '<div class="error" id = "road_slope"></div>',
     ];
     $form['vehicle']['Vehicle_Container'] = [
         '#type'=>'fieldset',
@@ -313,10 +313,10 @@ class batterycalcAjaxForm extends FormBase {
         '#step'=> 50,
         '#min' => 100,
         '#max' => 50000,
-        '#title' => $this->t('Vehicle Mass <output class="badge bg-secondary"></output>[kg]'),
+        '#title' => $this->t('Vehicle Mass [kg]'),
 		'#default_value' => 2000,
         '#prefix' => '<div class="row align-items-start p-auto"><div class="col border-end">',
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="vehicle_mass"></div>',
+        '#suffix' => '<div class="error" id="vehicle_mass"></div>',
     ];
     $form['vehicle']['Vehicle_Container']['Frontal_Area'] = [
         '#type' => 'number',
@@ -325,7 +325,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 100,
         '#title' => $this->t('Frontal Area [m2]'),
 		'#default_value' => 2.5,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "frontal_area"></div>',
+        '#suffix' => '<div class="error" id = "frontal_area"></div>',
     ];
     $form['vehicle']['Vehicle_Container']['Wheel_Radius'] = [
         '#type' => 'select',
@@ -343,7 +343,7 @@ class batterycalcAjaxForm extends FormBase {
         '#title' => $this->t('Rolling Resistance [-]'),
 		'#default_value' => 0.0120,
         '#prefix' => '<div class="col">',
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "rolling_resitance"></div>',
+        '#suffix' => '<div class="error" id = "rolling_resitance"></div>',
     ];
 	$form['vehicle']['Vehicle_Container']['Drag_Coefficient'] = [
         '#type' => 'number',
@@ -352,7 +352,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 5,
         '#title' => $this->t('Aerodynamic Drag [-]'),
 		'#default_value' => 0.35,
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id = "drag_coefficient"></div>',
+        '#suffix' => '<div class="error" id = "drag_coefficient"></div>',
     ];
 	$form['vehicle']['Vehicle_Container']['Vehicle_Range'] = [
         '#type' => 'number',
@@ -361,7 +361,7 @@ class batterycalcAjaxForm extends FormBase {
         '#max' => 2000,
         '#default_value' => 400,
         '#title' => $this->t('Vehicle Range [km]'),
-        '#suffix' => '<output class="badge bg-secondary"></output><div class="error" id="vehicle_range"></div></div>',
+        '#suffix' => '<div class="error" id="vehicle_range"></div></div>',
     ];
     $form['actions'] = [
 		'#type' => 'actions',
@@ -408,8 +408,9 @@ class batterycalcAjaxForm extends FormBase {
     ];
     $form['pack']['Pack_Energy_Container']['Pack_Size'] = [
         '#type' => 'number',
+        '#attributes' => ['disabled' => 'disabled'],
         '#title' => $this->t('Pack Energy [kWh]'),
-        '#default_value' => 85,
+        '#default_value' => 92.6,
         '#suffix' => '<div class="error" id = "pack_energy"></div>'
     ];
     $form['pack']['Voltage_Architecture'] = [

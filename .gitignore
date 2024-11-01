@@ -69,4 +69,10 @@
 /js/dataTables/datatables.js
 /css/batterycalc.css
 /css/dataTables/datatables.css
-
+/templates/battemo*
+fslightbox.js
+/js/plotly.js
+/js/makepdf.js
+/assets/batemo.json
+/templates/batemo_table.html
+/assets/images/*

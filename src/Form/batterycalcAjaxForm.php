@@ -13,10 +13,21 @@ use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Database\Database;
 use Drupal\batterycalc\Form\CycleData;
+use Drupal\Core\Ajax\CommandInterface;
 
 define("GRAVITY", 9.81);
 define("CELL_DB_NAME", 'cell_db2.min.json');
 define("WHEEL_DB_NAME", 'tyre_size.txt');
+
+class UpdateMotorPower implements CommandInterface
+{
+    public function render(){
+        return [
+            'command' => 'updateMotorPower',
+        ];
+    }
+
+}
 
 /**
  * Provides a battery pack calculation form.
@@ -641,7 +652,10 @@ public function selectCycle($form, FormStateInterface $form_state) {
 }
 
 public function motorConfiguration($form, FormStateInterface $form_state) {
-    return $form['powertrain']['Powertrain_Container']['Motor'];
+    $ajax_response = new AjaxResponse();
+    $ajax_response->addCommand(new ReplaceCommand('#motor-container', $form['powertrain']['Powertrain_Container']['Motor']));
+    $ajax_response->addCommand(new UpdateMotorPower());
+    return $ajax_response;
 }
 
 public function cellGeometryParameters($form, FormStateInterface $form_state) {

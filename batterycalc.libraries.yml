@@ -5,6 +5,8 @@ global-styling:
   # js:
   dependencies:
     - core/jquery
+    - core/drupal
+    - core/once
 
 chart_library:
   version: 1.0

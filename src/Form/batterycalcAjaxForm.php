@@ -26,7 +26,15 @@ class UpdateMotorPower implements CommandInterface
             'command' => 'updateMotorPower',
         ];
     }
+}
 
+class UpdateCycleSelect implements CommandInterface
+{
+    public function render(){
+        return [
+            'command' => 'updateCycle',
+        ];
+    }
 }
 
 /**
@@ -648,7 +656,9 @@ class batterycalcAjaxForm extends FormBase {
 public function selectCycle($form, FormStateInterface $form_state) {
     // one way to return a form element
     $ajax_response = new AjaxResponse();
-    return $ajax_response->addCommand(new ReplaceCommand('#Speed_Container', $form['Speed_Container']));
+    $ajax_response->addCommand(new ReplaceCommand('#Speed_Container', $form['Speed_Container']));
+    $ajax_response->addCommand(new UpdateCycleSelect());
+    return $ajax_response;
 }
 
 public function motorConfiguration($form, FormStateInterface $form_state) {

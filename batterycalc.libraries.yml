@@ -19,7 +19,7 @@ chart_library:
   js:
     js/b64images.js: {}
     js/main.min.js: {attributes: {'type': 'module'}}
-    js/batterycalc.min.js: {attributes: {'type': 'module'}}
+    # js/batterycalc.min.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
     js/bootstrap/bootstrap.min.js: {}
     js/dataTables/datatables.min.js: {}

@@ -585,7 +585,7 @@ class batterycalcAjaxForm extends FormBase {
         ];
     $form['PackParameters'] = [
         '#type' => 'container',
-        '#markup' => '<div id="packParameters" class="card bg-primary-subtle">Battery Pack Specifications here...</div>'
+        '#markup' => '<div id="packParameters" class="card bg-primary-subtle p-0">Battery Pack Specifications here...</div>'
         ];
     $form['CalculatePackParameters'] = [
         '#type' =>'button',
@@ -737,16 +737,15 @@ public function batteryPackParameters($form, FormStateInterface $form_state) {
 
             $power = $current * $packVoltage / 1000;
 
-            $text = $this->t('<div class="card-group">
-            <div class="card alert alert-primary">
+            $text = $this->t('<div class="card-group p-0">
+            <div class="card alert alert-primary p-0">
             <h5 class="card-header alert alert-warning text-center mt-0 fs-4 fw-bold">Cell Specification</h5>
                 <div class="card-body">'.$this->getCellSpec($cell_DB, $cell).'
-
                 </div>
             </div>
-            <div class="card alert alert-primary">
+            <div class="card alert alert-primary p-0">
             <h5 class="card-header alert alert-warning text-center mt-0 fs-4 fw-bold">Battery Pack Specification</h5>
-                <div class="card-body alert">
+                <div class="card-body alert p-0">
                 <p class="card-text m-0">Pack capacity: @revised_pack_capacity Ah</p>
                 <p class="card-text m-0">Pack energy: @revised_pack_size kWh</p>
                 <p class="card-text m-0">Pack S/P (series/parallel): @number_of_cells_in_series/@number_of_strings_in_parallel</p>

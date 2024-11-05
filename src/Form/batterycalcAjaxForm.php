@@ -630,11 +630,11 @@ class batterycalcAjaxForm extends FormBase {
             '<div class="accordion" id="accordionTableselect">
                 <div class="accordion-item">
                 <h2 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
-                    <button id="btnAccordion" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="true" aria-controls="accordionTableSelectBody">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="true" aria-controls="accordionTableSelectBody">
                         Collapse/Extend cell selection
                     </button>
                 </h2>
-                <div id="accordionTableselectBody" class="accordion-collapse collapse show" data-bs-parent="#accordionTableselect">
+                <div id="accordionTableselectBody" class="accordion-collapse collapse" data-bs-parent="#accordionTableselect">
                     <div class="accordion-body bg-secondary-subtle">
                         <div class="dtsp-verticalContainer">
                             <div class="dtsp-verticalPanes"></div>

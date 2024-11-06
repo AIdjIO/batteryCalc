@@ -400,7 +400,7 @@ class batterycalcAjaxForm extends FormBase {
 	];
     $form['Results'] = [
         '#type' => 'container',
-        '#markup' => '<div id="results" class="card bg-primary-subtle">Battery Pack Size [kwh] here...</div>'
+        '#markup' => '<div id="results" class="card alert alert-primary">Battery Pack Size [kwh] here...</div>'
       ];
 
     $form['CalculatePackSize'] = [
@@ -630,7 +630,7 @@ class batterycalcAjaxForm extends FormBase {
             '<div class="accordion" id="accordionTableselect">
                 <div class="accordion-item">
                 <h2 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="true" aria-controls="accordionTableSelectBody">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="false" aria-controls="accordionTableSelectBody">
                         Collapse/Extend cell selection
                     </button>
                 </h2>

@@ -7,6 +7,7 @@ global-styling:
     - core/jquery
     - core/drupal
     - core/once
+    - bootstrap/framework
 
 chart_library:
   version: 1.0
@@ -21,7 +22,7 @@ chart_library:
     js/main.min.js: {attributes: {'type': 'module'}}
     # js/batterycalc.min.js: {attributes: {'type': 'module'}}
     js/plotly/plotly-mod.min.js: {}
-    js/bootstrap/bootstrap.min.js: {}
+    # js/bootstrap/bootstrap.min.js: {}
     js/dataTables/datatables.min.js: {}
     js/pdfmake/vfs_fonts.min.js: {}
     js/pdfmake/makepdf.min.js: {}

@@ -627,13 +627,13 @@ class batterycalcAjaxForm extends FormBase {
                         'style' => 'width:100%;'
                         ],
         '#prefix' => Markup::create(
-            '<div class="accordion" id="accordionTableselect">
+            '<div class="accordion m-1" id="accordionTableselect">
                 <div class="accordion-item">
-                <h2 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
+                <h5 id"accordionHeaderTableselect" class="accordion-header m-0 p-0">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordionTableselectBody" aria-expanded="false" aria-controls="accordionTableSelectBody">
                         Collapse/Extend cell selection
                     </button>
-                </h2>
+                </h5>
                 <div id="accordionTableselectBody" class="accordion-collapse collapse" data-bs-parent="#accordionTableselect">
                     <div class="accordion-body bg-secondary-subtle">
                         <div class="dtsp-verticalContainer">

@@ -121,7 +121,7 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'details',
         '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#attributes' =>  ['id' => 'Speed_Container',
-                            'class' => ['p-0', 'm-0',],
+                            'class' => ['p-0',],
     ],
     ];
     $form['Speed_Container']['Vehicle_Speed'] = [ // expect speed in km/h

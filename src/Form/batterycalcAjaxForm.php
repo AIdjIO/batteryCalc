@@ -119,7 +119,7 @@ class batterycalcAjaxForm extends FormBase {
     ];
     $form['Speed_Container'] = [
         '#type' => 'details',
-        '#title' => $this->t('Speed Profile [km/h] (comma seperated values, 1s sample time)'),
+        '#title' => $this->t('Edit Speed Profile [km/h] (comma seperated values, 1s sample time)'),
         '#attributes' =>  ['id' => 'Speed_Container',
                             'class' => ['p-0',],
     ],
@@ -424,13 +424,14 @@ class batterycalcAjaxForm extends FormBase {
         '#type' => 'fieldset',
         '#title' => $this->t('Pack Energy'),
         '#attributes' => ['id' => 'pack_energy_container' ],
+        '#prefix' => '<div class="row"><div class="col">',
     ];
     $form['pack']['Pack_Energy_Container']['Pack_Size'] = [
         '#type' => 'number',
         '#attributes' => ['disabled' => 'disabled'],
         '#title' => $this->t('Pack Energy [kWh]'),
         '#default_value' => 92.6,
-        '#suffix' => '<div class="error" id = "pack_energy"></div>'
+        '#suffix' => '</div><div class="error" id="pack_energy"></div>'
     ];
     $form['pack']['Voltage_Architecture'] = [
         '#type' => 'radios',
@@ -440,6 +441,8 @@ class batterycalcAjaxForm extends FormBase {
             1 => $this->t('800V'),
         ],
         '#default_value' => 1,
+        '#prefix' => '<div class="col">',
+        '#suffix' => '</div></div>'
     ];
 
     $cell_DB = $this->getCellDB(CELL_DB_NAME);
@@ -585,7 +588,7 @@ class batterycalcAjaxForm extends FormBase {
         ];
     $form['PackParameters'] = [
         '#type' => 'container',
-        '#markup' => '<div id="packParameters" class="card bg-primary-subtle p-0">Battery Pack Specifications here...</div>'
+        '#markup' => '<div id="packParameters">Battery Pack Specifications here...</div>'
         ];
     $form['CalculatePackParameters'] = [
         '#type' =>'button',
